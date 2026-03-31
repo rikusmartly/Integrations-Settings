@@ -268,18 +268,26 @@
 
   .conditional-fields { display: none; }
   .conditional-fields.visible { display: block; }
-  .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+  .type-category { margin-bottom: 20px; }
+  .type-category:last-child { margin-bottom: 0; }
+  .type-category-label {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--fg-placeholder);
+    margin-bottom: 10px; padding-left: 2px;
+  }
+  .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .type-selector.single { grid-template-columns: 1fr; }
   .type-option {
     padding: 14px 12px; border: 1px solid var(--outline-static); border-radius: var(--radius-lg);
     text-align: center; cursor: pointer; transition: all 0.15s; font-size: 14px;
     font-weight: 500; color: var(--fg-standard); background: var(--fill-static-standard);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
   }
   .type-option:hover { border-color: var(--fill-primary-active); color: var(--fill-primary-active); }
   .type-option.selected {
     border-color: var(--fill-primary-active); background: rgba(109,40,217,0.04);
     color: var(--fill-primary-active); box-shadow: 0 0 0 1px var(--fill-primary-active);
   }
-  .type-option-icon { font-size: 24px; margin-bottom: 6px; }
+  .type-option-icon { font-size: 24px; }
   .account-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .account-chip {
     display: flex; align-items: center; gap: 6px; padding: 6px 12px;
@@ -319,17 +327,36 @@
     border-radius: var(--radius-2xl); padding: 24px; margin-bottom: 16px;
   }
   .detail-section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--fg-placeholder); margin-bottom: 16px; }
-  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 16px; }
   .detail-row:last-child { border-bottom: none; }
-  .detail-key { font-size: 14px; font-weight: 500; color: var(--fg-standard); min-width: 160px; flex-shrink: 0; }
-  .detail-value { font-size: 14px; color: var(--fg-strong); text-align: right; flex: 1; word-break: break-all; }
+  .detail-key { font-size: 14px; font-weight: 500; color: var(--fg-standard); min-width: 160px; flex-shrink: 0; padding-top: 6px; }
+  .detail-value { font-size: 14px; color: var(--fg-strong); text-align: right; flex: 1; word-break: break-all; padding-top: 6px; }
+  .detail-input { flex: 1; }
+  .detail-input .form-input,
+  .detail-input .form-select { text-align: right; }
+  .detail-row .form-tags { flex: 1; text-align: left; }
+  .detail-row .account-chips { margin-top: 0; }
   .detail-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
   .detail-tag { padding: 2px 8px; background: var(--outline-primary); border-radius: 4px; font-size: 13px; color: var(--fill-primary-active); font-weight: 500; }
 
   /* ── Empty State ── */
-  .empty-state { text-align: center; padding: 60px 24px; color: var(--fg-placeholder); }
-  .empty-state svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.4; }
-  .empty-state p { font-size: 15px; line-height: 22px; margin-bottom: 16px; }
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 64px; padding: 64px 24px; max-width: 425px; margin: 0 auto;
+  }
+  .empty-state-illustration {
+    width: 140px; height: 140px; border-radius: var(--radius-full); overflow: hidden; flex-shrink: 0;
+  }
+  .empty-state-illustration img { width: 100%; height: 100%; object-fit: cover; }
+  .empty-state-content { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
+  .empty-state-text { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; width: 100%; color: var(--fg-strong); }
+  .empty-state-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 32px; font-weight: 500; line-height: 40px; letter-spacing: -0.448px;
+  }
+  .empty-state-desc {
+    font-size: 16px; line-height: 24px; letter-spacing: -0.128px; color: var(--fg-strong);
+  }
   .confirm-message { font-size: 15px; line-height: 22px; color: var(--fg-standard); margin-bottom: 8px; }
   .confirm-name { font-weight: 600; color: var(--fg-strong); }
 
@@ -591,14 +618,18 @@ const CATEGORIES = [
   { id: 'reporting', label: 'Reporting Standard Connectors', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>' }
 ];
 const INTEGRATION_TYPES = [
-  { id: 'GA', label: 'Google Analytics', category: 'all' },
-  { id: 'MMP', label: 'MMP', category: 'cross-platform' },
-  { id: 'Adobe', label: 'Adobe Analytics', category: 'all' },
-  { id: 'Meta', label: 'Meta', category: 'meta' },
-  { id: 'SA360', label: 'Search Ads 360', category: 'all' },
+  { id: 'GA', label: 'Google Analytics', category: 'meta' },
+  { id: 'SA360', label: 'Google Search Ads 360', category: 'meta' },
+  { id: 'Adobe', label: 'Adobe Analytics', category: 'meta' },
+  { id: 'MMP', label: 'Mobile Measurement Partners', category: 'cross-platform' },
   { id: 'S2S', label: 'Server to Server API', category: 'cross-platform' },
-  { id: 'CXS', label: 'Creative X Scoring', category: 'cross-platform' },
+  { id: 'GA_X', label: 'Google Analytics', category: 'cross-platform' },
   { id: 'RSC', label: 'Reporting Standard Connector', category: 'reporting' }
+];
+const SETUP_CATEGORIES = [
+  { id: 'meta', label: 'Meta Integrations', types: ['GA', 'SA360', 'Adobe'] },
+  { id: 'cross-platform', label: 'Cross-platform Integrations', types: ['MMP', 'S2S', 'GA_X'] },
+  { id: 'reporting', label: 'Reporting Standard Connector', types: ['RSC'] }
 ];
 const TIMEZONES = ['UTC','US/Eastern','US/Central','US/Mountain','US/Pacific','Europe/London','Europe/Berlin','Europe/Helsinki','Asia/Tokyo','Asia/Shanghai','Australia/Sydney','America/Sao_Paulo'];
 const ACCOUNTS = ['Ad Account - Brand US','Ad Account - Brand EU','Ad Account - Performance US','Ad Account - Performance EU','Ad Account - Retargeting','Ad Account - DPA Global'];
@@ -661,7 +692,8 @@ function getStatusDescription(i) {
   return 'Not connected';
 }
 function getTypeLabel(t) { return INTEGRATION_TYPES.find(x => x.id === t)?.label || t; }
-function getTypeEmoji(t) { return { GA:'\ud83d\udcca', MMP:'\ud83d\udcf1', Adobe:'\ud83c\udfa8', Meta:'\ud83d\udd35', SA360:'\ud83d\udd0d', S2S:'\ud83d\udd17', CXS:'\u2728', RSC:'\ud83d\udcc1' }[t] || '\ud83d\udd0c'; }
+function getTypeEmoji(t) { return { GA:'\ud83d\udcca', GA_X:'\ud83d\udcca', MMP:'\ud83d\udcf1', Adobe:'\ud83c\udfa8', Meta:'\ud83d\udd35', SA360:'\ud83d\udd0d', S2S:'\ud83d\udd17', CXS:'\u2728', RSC:'\ud83d\udcc1' }[t] || '\ud83d\udd0c'; }
+function resolveType(t) { return t === 'GA_X' ? 'GA' : t; }
 function colLetter(i) { return String.fromCharCode(65 + i); }
 
 function filterIntegrations() {
@@ -683,7 +715,16 @@ function renderList() {
   const el = document.getElementById('integration-list');
   const items = filterIntegrations();
   if (!items.length) {
-    el.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><p>No integrations found in this category.<br>Add a new integration to get started.</p><button class="btn-primary" onclick="openAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg> Add new integration</button></div>`;
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-state-illustration"><img src="empty-illustration.png" alt="No content illustration"></div>
+      <div class="empty-state-content">
+        <div class="empty-state-text">
+          <h2 class="empty-state-title">No integrations found in this category</h2>
+          <p class="empty-state-desc">Add a new integration to get started.</p>
+        </div>
+        <button class="btn-primary" onclick="openAddModal()">Add new integration</button>
+      </div>
+    </div>`;
     return;
   }
   el.innerHTML = items.map(item => `
@@ -693,7 +734,7 @@ function renderList() {
         <div class="card-description"><span class="status-dot ${item.status}"></span>${getStatusDescription(item)}</div>
       </div>
       <div class="card-actions" onclick="event.stopPropagation()">
-        <button class="card-action-btn" onclick="${item.type === 'RSC' ? `openRscWizard('${item.id}')` : `openEditModal('${item.id}')`}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+        <button class="card-action-btn" onclick="showDetail('${item.id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
         <button class="card-action-btn delete" onclick="openDeleteModal('${item.id}')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
       </div>
       <div class="card-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></div>
@@ -710,6 +751,7 @@ function showDetail(id) {
   document.getElementById('list-view').classList.remove('active');
   const d = document.getElementById('detail-view');
   d.classList.add('active');
+  d.dataset.itemId = id;
 
   if (item.type === 'RSC') { renderRscDetail(d, item); return; }
 
@@ -717,28 +759,83 @@ function showDetail(id) {
   const ext = item.settings.externalIds || {};
   const events = item.settings.events || [];
   const utm = item.settings.utmConfig || {};
+  const showGA = item.type === 'GA' || item.type === 'SA360';
+  const showAdobe = item.type === 'Adobe';
+  const showMMP = item.type === 'MMP';
+
   d.innerHTML = `
     <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7"/></svg> Back to integrations</button>
     <div class="detail-header">
       <div class="detail-title-row"><h2 class="detail-title">${item.name}</h2><span class="status-badge ${item.status}"><span class="status-dot ${item.status}"></span>${getStatusLabel(item.status)}</span></div>
       <div class="detail-actions">
-        <button class="btn-secondary" onclick="openEditModal('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> Edit</button>
+        <button class="btn-primary" onclick="saveDetailInline('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 13l4 4L19 7"/></svg> Save</button>
         <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete</button>
       </div>
     </div>
+
     <div class="detail-section"><div class="detail-section-title">General</div>
-      <div class="detail-row"><span class="detail-key">Integration name</span><span class="detail-value">${item.name}</span></div>
+      <div class="detail-row"><span class="detail-key">Integration name</span><div class="detail-input"><input type="text" class="form-input" id="di-name" value="${item.name}"></div></div>
       <div class="detail-row"><span class="detail-key">Type</span><span class="detail-value">${getTypeLabel(item.type)}</span></div>
-      <div class="detail-row"><span class="detail-key">Time zone</span><span class="detail-value">${item.settings.timezone}</span></div>
+      <div class="detail-row"><span class="detail-key">Time zone</span><div class="detail-input"><select class="form-select" id="di-timezone">${TIMEZONES.map(tz => `<option value="${tz}" ${item.settings.timezone === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select></div></div>
       <div class="detail-row"><span class="detail-key">Created</span><span class="detail-value">${new Date(item.createdAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span></div>
       <div class="detail-row"><span class="detail-key">Last updated</span><span class="detail-value">${new Date(item.updatedAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span></div>
     </div>
-    ${creds.apiToken||creds.clientId ? `<div class="detail-section"><div class="detail-section-title">Authentication</div>${creds.apiToken ? `<div class="detail-row"><span class="detail-key">API Token</span><span class="detail-value">${'\u2022'.repeat(16)}...</span></div>` : ''}${creds.clientId ? `<div class="detail-row"><span class="detail-key">Client ID</span><span class="detail-value">${creds.clientId}</span></div>` : ''}${creds.clientSecret ? `<div class="detail-row"><span class="detail-key">Client Secret</span><span class="detail-value">${'\u2022'.repeat(8)}</span></div>` : ''}</div>` : ''}
-    ${ext.propertyId||ext.appId||ext.reportSuiteId ? `<div class="detail-section"><div class="detail-section-title">Data Configuration</div>${ext.propertyId ? `<div class="detail-row"><span class="detail-key">Property ID</span><span class="detail-value">${ext.propertyId}</span></div>` : ''}${ext.appId ? `<div class="detail-row"><span class="detail-key">App ID</span><span class="detail-value">${ext.appId}</span></div>` : ''}${ext.reportSuiteId ? `<div class="detail-row"><span class="detail-key">Report Suite ID</span><span class="detail-value">${ext.reportSuiteId}</span></div>` : ''}</div>` : ''}
-    ${events.length ? `<div class="detail-section"><div class="detail-section-title">Events</div><div class="detail-row"><span class="detail-key">Configured events</span><div class="detail-tags">${events.map(e=>`<span class="detail-tag">${e}</span>`).join('')}</div></div></div>` : ''}
-    ${utm.parameter ? `<div class="detail-section"><div class="detail-section-title">Tracking Settings</div><div class="detail-row"><span class="detail-key">UTM Parameter</span><span class="detail-value">${utm.parameter}</span></div></div>` : ''}
-    ${item.accounts.length ? `<div class="detail-section"><div class="detail-section-title">Account Mapping</div><div class="detail-row"><span class="detail-key">Linked accounts</span><div class="detail-tags">${item.accounts.map(a=>`<span class="detail-tag">${a}</span>`).join('')}</div></div></div>` : ''}
+
+    <div class="detail-section"><div class="detail-section-title">Authentication</div>
+      <div class="detail-row"><span class="detail-key">API Token</span><div class="detail-input"><input type="text" class="form-input" id="di-apiToken" placeholder="Enter API token" value="${creds.apiToken || ''}"></div></div>
+      ${showAdobe ? `
+      <div class="detail-row"><span class="detail-key">Client ID</span><div class="detail-input"><input type="text" class="form-input" id="di-clientId" placeholder="Enter client ID" value="${creds.clientId || ''}"></div></div>
+      <div class="detail-row"><span class="detail-key">Client Secret</span><div class="detail-input"><input type="password" class="form-input" id="di-clientSecret" placeholder="Enter client secret" value="${creds.clientSecret || ''}"></div></div>
+      ` : ''}
+    </div>
+
+    <div class="detail-section"><div class="detail-section-title">Data Configuration</div>
+      ${showGA ? `<div class="detail-row"><span class="detail-key">Property / View ID</span><div class="detail-input"><input type="text" class="form-input" id="di-propertyId" placeholder="e.g., UA-12345678-1" value="${ext.propertyId || ''}"></div></div>` : ''}
+      ${showMMP ? `<div class="detail-row"><span class="detail-key">Mobile App ID</span><div class="detail-input"><input type="text" class="form-input" id="di-appId" placeholder="e.g., com.example.app" value="${ext.appId || ''}"></div></div>` : ''}
+      ${showAdobe ? `<div class="detail-row"><span class="detail-key">Report Suite ID</span><div class="detail-input"><input type="text" class="form-input" id="di-reportSuiteId" placeholder="e.g., smartly-prod-01" value="${ext.reportSuiteId || ''}"></div></div>` : ''}
+      <div class="detail-row"><span class="detail-key">Events</span><div class="form-tags" id="di-events" onclick="document.getElementById('di-event-input').focus()">${events.map(e => `<span class="form-tag" data-event="${e}">${e}<button onclick="removeEvent(this)">&times;</button></span>`).join('')}<input type="text" id="di-event-input" placeholder="Type and press Enter" onkeydown="handleEventKey(event)"></div></div>
+    </div>
+
+    ${showGA ? `<div class="detail-section"><div class="detail-section-title">Tracking Settings</div>
+      <div class="detail-row"><span class="detail-key">UTM Parameter</span><div class="detail-input"><select class="form-select" id="di-utmParam"><option value="">Select...</option><option value="utm_id" ${utm.parameter === 'utm_id' ? 'selected' : ''}>utm_id (recommended)</option><option value="utm_campaign" ${utm.parameter === 'utm_campaign' ? 'selected' : ''}>utm_campaign</option><option value="utm_source" ${utm.parameter === 'utm_source' ? 'selected' : ''}>utm_source</option><option value="utm_medium" ${utm.parameter === 'utm_medium' ? 'selected' : ''}>utm_medium</option></select></div></div>
+    </div>` : ''}
+
+    <div class="detail-section"><div class="detail-section-title">Account Mapping</div>
+      <div class="detail-row"><span class="detail-key">Linked accounts</span><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item.accounts.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>${acc}</div>`).join('')}</div></div>
+    </div>
   `;
+}
+
+function saveDetailInline(id) {
+  const item = integrations.find(i => i.id === id);
+  if (!item) return;
+
+  const name = document.getElementById('di-name')?.value.trim();
+  if (!name) { showToast('Integration name is required', 'error'); document.getElementById('di-name').classList.add('error'); return; }
+
+  item.name = name;
+  item.settings.timezone = document.getElementById('di-timezone')?.value || item.settings.timezone;
+
+  const apiToken = document.getElementById('di-apiToken')?.value.trim() || '';
+  const clientId = document.getElementById('di-clientId')?.value.trim() || '';
+  const clientSecret = document.getElementById('di-clientSecret')?.value.trim() || '';
+  item.settings.credentials = { apiToken, clientId, clientSecret };
+
+  const propertyId = document.getElementById('di-propertyId')?.value.trim() || '';
+  const appId = document.getElementById('di-appId')?.value.trim() || '';
+  const reportSuiteId = document.getElementById('di-reportSuiteId')?.value.trim() || '';
+  item.settings.externalIds = { propertyId, appId, reportSuiteId };
+
+  item.settings.events = Array.from(document.querySelectorAll('#di-events .form-tag')).map(t => t.dataset.event);
+  item.settings.utmConfig = document.getElementById('di-utmParam')?.value ? { parameter: document.getElementById('di-utmParam').value } : {};
+  item.accounts = Array.from(document.querySelectorAll('.account-chip.selected')).map(e => e.dataset.account);
+
+  item.status = (apiToken || clientId) ? 'active' : 'inactive';
+  item.updatedAt = new Date().toISOString();
+
+  showToast(`"${name}" saved`, 'success');
+  renderList();
+  showDetail(id);
 }
 
 /* ═══════════════════════════════════════════════
@@ -749,31 +846,25 @@ function renderRscDetail(el, item) {
   const hasData = rsc && rsc.validation;
   const v = rsc?.validation || {};
   const data = rsc?.previewData || { headers: [], rows: [] };
-  const mappingLabels = {};
-  if (rsc?.mapping) {
-    Object.entries(rsc.mapping).forEach(([k, role]) => {
-      const r = RSC_FIELD_ROLES.find(f => f.id === role);
-      mappingLabels[k] = r ? r.label : role;
-    });
-  }
 
   el.innerHTML = `
     <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7"/></svg> Back to integrations</button>
     <div class="detail-header">
       <div class="detail-title-row"><h2 class="detail-title">${item.name}</h2><span class="status-badge ${item.status}"><span class="status-dot ${item.status}"></span>${getStatusLabel(item.status)}</span></div>
       <div class="detail-actions">
-        <button class="btn-secondary" onclick="openRscWizard('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> Edit mapping</button>
+        <button class="btn-secondary" onclick="openRscWizard('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Re-sync</button>
+        <button class="btn-primary" onclick="saveRscDetailInline('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 13l4 4L19 7"/></svg> Save</button>
         <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete</button>
       </div>
     </div>
 
     <div class="detail-section">
       <div class="detail-section-title">Connection</div>
-      <div class="detail-row"><span class="detail-key">Source</span><span class="detail-value">Google Spreadsheet</span></div>
-      ${rsc?.sheetUrl ? `<div class="detail-row"><span class="detail-key">Sheet URL</span><span class="detail-value" style="word-break:break-all"><a href="${rsc.sheetUrl}" target="_blank" style="color:var(--fill-primary-active);text-decoration:none">${rsc.sheetUrl.substring(0,60)}...</a></span></div>` : ''}
-      ${rsc?.sheetName ? `<div class="detail-row"><span class="detail-key">Sheet name</span><span class="detail-value">${rsc.sheetName}</span></div>` : ''}
-      ${rsc?.granularity ? `<div class="detail-row"><span class="detail-key">Data granularity</span><span class="detail-value" style="text-transform:capitalize">${rsc.granularity.replace('_',' ')}</span></div>` : ''}
-      ${rsc?.metricName ? `<div class="detail-row"><span class="detail-key">Metric name</span><span class="detail-value"><span class="detail-tag">${rsc.metricName}</span></span></div>` : ''}
+      <div class="detail-row"><span class="detail-key">Integration name</span><div class="detail-input"><input type="text" class="form-input" id="rdi-name" value="${item.name}"></div></div>
+      <div class="detail-row"><span class="detail-key">Sheet URL</span><div class="detail-input"><input type="text" class="form-input" id="rdi-sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/..." value="${rsc?.sheetUrl || ''}"></div></div>
+      <div class="detail-row"><span class="detail-key">Sheet / Tab name</span><div class="detail-input"><input type="text" class="form-input" id="rdi-sheetName" placeholder="e.g., Sheet1" value="${rsc?.sheetName || ''}"></div></div>
+      <div class="detail-row"><span class="detail-key">Data granularity</span><div class="detail-input"><select class="form-select" id="rdi-granularity">${GRANULARITY_LEVELS.map(g => `<option value="${g.id}" ${rsc?.granularity === g.id ? 'selected' : ''}>${g.label}</option>`).join('')}</select></div></div>
+      <div class="detail-row"><span class="detail-key">Metric name</span><div class="detail-input"><input type="text" class="form-input" id="rdi-metricName" placeholder="e.g., mmm_multiplier" value="${rsc?.metricName || ''}"></div></div>
       <div class="detail-row"><span class="detail-key">Created</span><span class="detail-value">${new Date(item.createdAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span></div>
       <div class="detail-row"><span class="detail-key">Last synced</span><span class="detail-value">${v.lastSync ? new Date(v.lastSync).toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Never'}</span></div>
     </div>
@@ -797,10 +888,7 @@ function renderRscDetail(el, item) {
     ${rsc?.mapping ? `
     <div class="detail-section">
       <div class="detail-section-title">Column Mapping</div>
-      ${data.headers.map((h, i) => {
-        const role = mappingLabels[i];
-        return role ? `<div class="detail-row"><span class="detail-key">Column ${colLetter(i)}: ${h}</span><span class="detail-value"><span class="detail-tag">${role}</span></span></div>` : '';
-      }).join('')}
+      ${data.headers.map((h, i) => `<div class="detail-row"><span class="detail-key">Column ${colLetter(i)}: ${h}</span><div class="detail-input"><select class="form-select rdi-mapping" data-col="${i}">${RSC_FIELD_ROLES.map(r => `<option value="${r.id}" ${rsc.mapping[i] === r.id ? 'selected' : ''}>${r.label}</option>`).join('')}</select></div></div>`).join('')}
     </div>` : ''}
 
     ${data.rows.length ? `
@@ -809,15 +897,44 @@ function renderRscDetail(el, item) {
       <div class="synced-data-wrap">
         <table class="preview-table">
           <thead><tr>${data.headers.map((h,i) => `<th>${colLetter(i)}: ${h}</th>`).join('')}</tr></thead>
-          <tbody>${data.rows.map(r => `<tr>${r.map(c => `<td>${c || '<span style="color:var(--fg-disabled)">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody>
+          <tbody>${data.rows.map(r => `<tr>${r.map(c => `<td>${c || '<span style="color:var(--fg-disabled)">\u2014</span>'}</td>`).join('')}</tr>`).join('')}</tbody>
         </table>
       </div>
     </div>` : `
     <div class="callout info" style="margin-top:8px">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      <p>No spreadsheet connected yet. Click <strong>Edit mapping</strong> to connect a Google Spreadsheet and configure the column mapping.</p>
+      <p>No spreadsheet connected yet. Use the <strong>Re-sync</strong> button after entering a Sheet URL to pull data.</p>
     </div>`}
   `;
+}
+
+function saveRscDetailInline(id) {
+  const item = integrations.find(i => i.id === id);
+  if (!item) return;
+
+  const name = document.getElementById('rdi-name')?.value.trim();
+  if (!name) { showToast('Integration name is required', 'error'); document.getElementById('rdi-name').classList.add('error'); return; }
+
+  item.name = name;
+  if (!item.rsc) item.rsc = { sheetUrl: '', sheetName: '', granularity: '', metricName: '', mapping: {}, validation: null, previewData: null };
+  item.rsc.sheetUrl = document.getElementById('rdi-sheetUrl')?.value.trim() || '';
+  item.rsc.sheetName = document.getElementById('rdi-sheetName')?.value.trim() || '';
+  item.rsc.granularity = document.getElementById('rdi-granularity')?.value || '';
+  item.rsc.metricName = document.getElementById('rdi-metricName')?.value.trim() || '';
+
+  const mappingSelects = document.querySelectorAll('.rdi-mapping');
+  if (mappingSelects.length) {
+    const newMapping = {};
+    mappingSelects.forEach(sel => { if (sel.value) newMapping[sel.dataset.col] = sel.value; });
+    item.rsc.mapping = newMapping;
+  }
+
+  item.status = item.rsc.sheetUrl ? 'active' : 'inactive';
+  item.updatedAt = new Date().toISOString();
+
+  showToast(`"${name}" saved`, 'success');
+  renderList();
+  showDetail(id);
 }
 
 function backToList() {
@@ -850,9 +967,16 @@ function renderGenericForm(item) {
   const selectedType = item ? item.type : '';
 
   body.innerHTML = `
-    ${!isEdit ? `<div class="form-section"><div class="form-section-title">Integration Type</div><div class="type-selector" id="type-selector">
-      ${INTEGRATION_TYPES.map(t => `<div class="type-option ${selectedType === t.id ? 'selected' : ''}" data-type="${t.id}" onclick="selectType('${t.id}')"><div class="type-option-icon">${getTypeEmoji(t.id)}</div>${t.label}</div>`).join('')}
-    </div></div>` : ''}
+    ${!isEdit ? `<div class="form-section"><div class="form-section-title">Choose integration type</div>
+      ${SETUP_CATEGORIES.map(cat => `
+        <div class="type-category">
+          <div class="type-category-label">${cat.label}</div>
+          <div class="type-selector ${cat.types.length === 1 ? 'single' : ''}">
+            ${cat.types.map(tid => { const t = INTEGRATION_TYPES.find(x => x.id === tid); return t ? `<div class="type-option ${selectedType === t.id ? 'selected' : ''}" data-type="${t.id}" onclick="selectType('${t.id}')"><div class="type-option-icon">${getTypeEmoji(t.id)}</div>${t.label}</div>` : ''; }).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>` : ''}
     <div class="form-section"><div class="form-section-title">General</div>
       <div class="form-group"><label class="form-label">Integration name <span class="required">*</span></label><input type="text" class="form-input" id="field-name" placeholder="e.g., Google Analytics - Production" value="${item ? item.name : ''}"><div class="form-error" id="error-name">Integration name is required</div></div>
       <div class="form-group"><label class="form-label">Time zone <span class="required">*</span></label><select class="form-select" id="field-timezone"><option value="">Select time zone...</option>${TIMEZONES.map(tz => `<option value="${tz}" ${item?.settings?.timezone === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select><div class="form-error" id="error-timezone">Time zone is required</div><div class="form-hint">Must match your external system for accurate data sync</div></div>
@@ -879,7 +1003,7 @@ function selectType(t) {
   document.querySelectorAll('.type-option').forEach(e => e.classList.remove('selected'));
   document.querySelector(`.type-option[data-type="${t}"]`).classList.add('selected');
   if (t === 'RSC') { closeModal(); openRscWizard(null); return; }
-  updateFieldVisibility(t);
+  updateFieldVisibility(resolveType(t));
 }
 function updateFieldVisibility(t) {
   const ga = t === 'GA' || t === 'SA360', ad = t === 'Adobe', mm = t === 'MMP';
@@ -927,8 +1051,9 @@ function saveGenericIntegration() {
     item.settings = { timezone: tz, credentials: { apiToken, clientId, clientSecret }, externalIds: { propertyId, appId, reportSuiteId }, events, utmConfig: utmParam ? { parameter: utmParam } : {} };
     showToast(`"${name}" updated`, 'success');
   } else {
-    const t = document.querySelector('.type-option.selected').dataset.type;
-    const cat = INTEGRATION_TYPES.find(x => x.id === t).category;
+    const rawType = document.querySelector('.type-option.selected').dataset.type;
+    const t = resolveType(rawType);
+    const cat = INTEGRATION_TYPES.find(x => x.id === rawType).category;
     integrations.push({ id: String(nextId++), name, type: t, status, category: cat, settings: { timezone: tz, credentials: { apiToken, clientId, clientSecret }, externalIds: { propertyId, appId, reportSuiteId }, events, utmConfig: utmParam ? { parameter: utmParam } : {} }, accounts: accts, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     showToast(`"${name}" created`, 'success');
   }

@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Integration Settings — Smartly</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
 <style>
+  .mi {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal; font-style: normal; display: inline-flex;
+    align-items: center; justify-content: center;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    -webkit-font-smoothing: antialiased; line-height: 1;
+    font-size: 20px; vertical-align: middle;
+  }
+  .mi.filled { font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
   :root {
     --fill-static-weak: #f5f5f5;
     --fill-static-standard: #fff;
@@ -62,6 +72,7 @@
   }
   .sidebar-icon:hover { background: rgba(0,0,0,0.05); }
   .sidebar-icon svg { width: 20px; height: 20px; }
+  .sidebar-icon .mi { font-size: 20px; }
   .sidebar-bottom { display: flex; flex-direction: column; align-items: center; gap: 16px; }
   .sidebar-badge {
     position: absolute; top: 0; right: 0; width: 16px; height: 16px;
@@ -151,6 +162,7 @@
   .tab:hover { color: var(--fg-standard); background: rgba(255,255,255,0.5); }
   .tab.active { background: var(--fill-static-standard); color: var(--fg-strong); box-shadow: var(--shadow-default); }
   .tab svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .tab .mi { flex-shrink: 0; }
 
   /* ── Integration Cards ── */
   .integration-list { display: flex; flex-direction: column; gap: 12px; }
@@ -189,6 +201,28 @@
   .card-action-btn:hover { background: rgba(0,0,0,0.05); }
   .card-action-btn.delete:hover { background: #fef2f2; color: #ef4444; }
   .card-action-btn svg { width: 16px; height: 16px; }
+  .card-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-lg); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 8px; color: var(--fg-standard);
+  }
+  .card-icon svg { width: 22px; height: 22px; }
+  .card-channels {
+    display: flex; align-items: center; gap: 4px; margin-top: 6px; flex-wrap: wrap;
+  }
+  .channel-logo {
+    width: 22px; height: 22px; border-radius: var(--radius-full); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(0,0,0,0.06); transition: transform 0.15s;
+  }
+  .channel-logo:hover { transform: scale(1.15); z-index: 1; }
+  .channel-logo svg { width: 14px; height: 14px; }
+  .channel-logo-more {
+    height: 22px; padding: 0 7px; border-radius: var(--radius-full); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--fill-static-strong); font-size: 11px; font-weight: 600;
+    color: var(--fg-placeholder); border: 1px solid rgba(0,0,0,0.06);
+  }
   .card-chevron { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--fg-standard); }
   .card-chevron svg { width: 20px; height: 20px; }
 
@@ -219,6 +253,7 @@
   }
   .modal-close:hover { background: rgba(0,0,0,0.05); }
   .modal-close svg { width: 20px; height: 20px; }
+  .modal-close .mi { font-size: 20px; }
   .modal-body { padding: 24px; }
   .modal-footer {
     display: flex; align-items: center; justify-content: flex-end; gap: 12px;
@@ -287,7 +322,9 @@
     border-color: var(--fill-primary-active); background: rgba(109,40,217,0.04);
     color: var(--fill-primary-active); box-shadow: 0 0 0 1px var(--fill-primary-active);
   }
-  .type-option-icon { font-size: 24px; }
+  .type-option-icon { font-size: 28px; color: var(--fg-standard); line-height: 1; }
+  .type-option.selected .type-option-icon { color: var(--fill-primary-active); }
+  .type-option:hover .type-option-icon { color: var(--fill-primary-active); }
   .account-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .account-chip {
     display: flex; align-items: center; gap: 6px; padding: 6px 12px;
@@ -370,6 +407,106 @@
   .toast.success { background: var(--green-50); color: var(--green-700); border: 1px solid #bbf7d0; }
   .toast.error { background: var(--red-50); color: var(--red-700); border: 1px solid #fecaca; }
   .toast.info { background: var(--blue-50); color: var(--blue-700); border: 1px solid #bfdbfe; }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .filter-search {
+    position: relative; flex: 1; min-width: 200px; max-width: 320px;
+  }
+  .filter-search input {
+    width: 100%; padding: 8px 12px 8px 36px; border: 1px solid var(--outline-static);
+    border-radius: var(--radius-lg); font-size: 14px; line-height: 20px; color: var(--fg-strong);
+    background: var(--fill-static-standard); outline: none; font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .filter-search input::placeholder { color: var(--fg-placeholder); }
+  .filter-search input:focus { border-color: var(--fill-primary-active); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
+  .filter-search-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: var(--fg-placeholder); pointer-events: none;
+  }
+  .filter-dropdown {
+    position: relative;
+  }
+  .filter-dropdown-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+    border: 1px solid var(--outline-static); border-radius: var(--radius-lg);
+    font-size: 14px; font-weight: 500; color: var(--fg-standard); background: var(--fill-static-standard);
+    cursor: pointer; transition: all 0.15s; white-space: nowrap; font-family: inherit;
+  }
+  .filter-dropdown-btn:hover { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.02); }
+  .filter-dropdown-btn.has-selection {
+    border-color: var(--fill-primary-active); background: rgba(109,40,217,0.04); color: var(--fill-primary-active);
+  }
+  .filter-dropdown-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .filter-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-full);
+    background: var(--fill-primary-active); color: var(--fg-inverse);
+    font-size: 11px; font-weight: 600; line-height: 1;
+  }
+  .filter-panel {
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 50;
+    min-width: 260px; max-height: 340px; overflow-y: auto;
+    background: var(--fill-static-standard); border: 1px solid var(--outline-static);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+    opacity: 0; visibility: hidden; transform: translateY(-4px);
+    transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+  }
+  .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
+  .filter-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--outline-static);
+    font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--fg-placeholder);
+  }
+  .filter-panel-clear {
+    font-size: 12px; font-weight: 500; text-transform: none; letter-spacing: 0;
+    color: var(--fill-primary-active); cursor: pointer; border: none; background: none;
+    padding: 0; font-family: inherit;
+  }
+  .filter-panel-clear:hover { text-decoration: underline; }
+  .filter-option {
+    display: flex; align-items: center; gap: 10px; padding: 9px 14px;
+    cursor: pointer; transition: background 0.1s; font-size: 14px; color: var(--fg-strong);
+  }
+  .filter-option:hover { background: rgba(0,0,0,0.03); }
+  .filter-option .check-box {
+    width: 16px; height: 16px; border: 1.5px solid var(--outline-static);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .filter-option.selected .check-box {
+    background: var(--fill-primary-active); border-color: var(--fill-primary-active);
+  }
+  .filter-option .check-box svg { display: none; width: 12px; height: 12px; color: white; }
+  .filter-option.selected .check-box svg { display: block; }
+  .filter-option-dot { width: 8px; height: 8px; border-radius: var(--radius-full); flex-shrink: 0; }
+  .active-filters {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .active-filter-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+    background: var(--outline-primary); border-radius: var(--radius-full);
+    font-size: 12px; font-weight: 500; color: var(--fill-primary-active);
+  }
+  .active-filter-chip button {
+    border: none; background: none; cursor: pointer; color: var(--fill-primary-active);
+    padding: 0; display: flex; opacity: 0.6; font-size: 14px; line-height: 1;
+  }
+  .active-filter-chip button:hover { opacity: 1; }
+  .filter-clear-all {
+    display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+    border: none; background: transparent; border-radius: var(--radius-full);
+    font-size: 12px; font-weight: 500; color: var(--fg-placeholder); cursor: pointer;
+    font-family: inherit; transition: color 0.15s;
+  }
+  .filter-clear-all:hover { color: var(--fg-strong); }
+  .filter-results-count {
+    font-size: 13px; color: var(--fg-placeholder); margin-left: auto; white-space: nowrap;
+  }
 
   .view { display: none; }
   .view.active { display: block; }
@@ -517,20 +654,20 @@
       <svg viewBox="0 0 20 10" fill="none"><path d="M0 5L6 0V3H14V0L20 5L14 10V7H6V10L0 5Z" fill="white"/></svg>
     </div>
     <div class="sidebar-nav">
-      <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
-      <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
-      <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg></div>
-      <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-      <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+      <div class="sidebar-icon"><span class="mi">home</span></div>
+      <div class="sidebar-icon"><span class="mi">bolt</span></div>
+      <div class="sidebar-icon"><span class="mi">campaign</span></div>
+      <div class="sidebar-icon"><span class="mi">sentiment_satisfied</span></div>
+      <div class="sidebar-icon"><span class="mi">lightbulb</span></div>
     </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div>
+    <div class="sidebar-icon"><span class="mi">search</span></div>
     <div class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+      <span class="mi">inbox</span>
       <span class="sidebar-badge">2</span>
     </div>
-    <div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+    <div class="sidebar-icon"><span class="mi">help</span></div>
     <div class="sidebar-divider"></div>
     <div class="sidebar-avatar">EC<div class="sidebar-avatar-badge">EC</div></div>
   </div>
@@ -538,8 +675,8 @@
 
 <main class="main">
   <div class="breadcrumbs">
-    <div class="breadcrumb-home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
-    <div class="breadcrumb-sep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="breadcrumb-home" title="Home"><span class="mi" style="font-size:16px">home</span></div>
+    <div class="breadcrumb-sep"><span class="mi" style="font-size:16px;color:var(--fg-disabled)">chevron_right</span></div>
     <div class="breadcrumb-current">Integration settings</div>
   </div>
 
@@ -548,7 +685,7 @@
       <div class="hero-header">
         <h1 class="hero-title">Integration settings</h1>
         <button class="btn-primary" onclick="openAddModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+          <span class="mi" style="font-size:18px">add</span>
           Add new integration
         </button>
       </div>
@@ -560,6 +697,8 @@
       </p>
       <div class="tabs" id="tabs"></div>
     </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div class="active-filters" id="active-filters"></div>
     <div class="integration-list" id="integration-list"></div>
   </div>
 
@@ -571,7 +710,7 @@
   <div class="modal" id="modal">
     <div class="modal-header">
       <h2 class="modal-title" id="modal-title">Add new integration</h2>
-      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <button class="modal-close" onclick="closeModal()"><span class="mi">close</span></button>
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer" id="modal-footer"></div>
@@ -583,7 +722,7 @@
   <div class="modal wide" id="rsc-modal">
     <div class="modal-header">
       <h2 class="modal-title" id="rsc-modal-title">Connect Google Spreadsheet</h2>
-      <button class="modal-close" onclick="closeRscModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <button class="modal-close" onclick="closeRscModal()"><span class="mi">close</span></button>
     </div>
     <div class="modal-body" id="rsc-modal-body"></div>
     <div class="modal-footer" id="rsc-modal-footer"></div>
@@ -595,7 +734,7 @@
   <div class="modal" style="width: 420px;">
     <div class="modal-header">
       <h2 class="modal-title">Delete integration</h2>
-      <button class="modal-close" onclick="closeDeleteModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <button class="modal-close" onclick="closeDeleteModal()"><span class="mi">close</span></button>
     </div>
     <div class="modal-body" id="delete-body"></div>
     <div class="modal-footer">
@@ -612,23 +751,20 @@
    CONSTANTS
    ═══════════════════════════════════════════════ */
 const CATEGORIES = [
-  { id: 'all', label: 'All integrations', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>' },
-  { id: 'meta', label: 'Meta Integrations', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zM8 12s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>' },
-  { id: 'cross-platform', label: 'Cross-platform Integrations', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 2H4m0 0l4 4m-4-4l4-4"/></svg>' },
-  { id: 'reporting', label: 'Reporting Standard Connectors', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>' }
+  { id: 'all', label: 'All integrations', icon: '<span class="mi" style="font-size:16px">language</span>' },
+  { id: 'measurement', label: 'Measurement Integrations', icon: '<span class="mi" style="font-size:16px">bar_chart</span>' },
+  { id: 'reporting', label: 'Reporting Standard Connectors', icon: '<span class="mi" style="font-size:16px">description</span>' }
 ];
 const INTEGRATION_TYPES = [
-  { id: 'GA', label: 'Google Analytics', category: 'meta' },
-  { id: 'SA360', label: 'Google Search Ads 360', category: 'meta' },
-  { id: 'Adobe', label: 'Adobe Analytics', category: 'meta' },
-  { id: 'MMP', label: 'Mobile Measurement Partners', category: 'cross-platform' },
-  { id: 'S2S', label: 'Server to Server API', category: 'cross-platform' },
-  { id: 'GA_X', label: 'Google Analytics', category: 'cross-platform' },
+  { id: 'GA', label: 'Google Analytics', category: 'measurement' },
+  { id: 'SA360', label: 'Google Search Ads 360', category: 'measurement' },
+  { id: 'Adobe', label: 'Adobe Analytics', category: 'measurement' },
+  { id: 'MMP', label: 'Mobile Measurement Partners', category: 'measurement' },
+  { id: 'S2S', label: 'Server to Server API', category: 'measurement' },
   { id: 'RSC', label: 'Reporting Standard Connector', category: 'reporting' }
 ];
 const SETUP_CATEGORIES = [
-  { id: 'meta', label: 'Meta Integrations', types: ['GA', 'SA360', 'Adobe'] },
-  { id: 'cross-platform', label: 'Cross-platform Integrations', types: ['MMP', 'S2S', 'GA_X'] },
+  { id: 'measurement', label: 'Measurement Integrations', types: ['GA', 'SA360', 'Adobe', 'MMP', 'S2S'] },
   { id: 'reporting', label: 'Reporting Standard Connector', types: ['RSC'] }
 ];
 const TIMEZONES = ['UTC','US/Eastern','US/Central','US/Mountain','US/Pacific','Europe/London','Europe/Berlin','Europe/Helsinki','Asia/Tokyo','Asia/Shanghai','Australia/Sydney','America/Sao_Paulo'];
@@ -652,6 +788,78 @@ const RSC_FIELD_ROLES = [
   { id: 'metric_value', label: 'Metric Value' }
 ];
 
+const CHANNELS = {
+  meta: {
+    label: 'Meta',
+    color: '#1877F2',
+    bg: '#EBF3FE',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" fill="#1877F2"/></svg>'
+  },
+  google: {
+    label: 'Google Ads',
+    color: '#4285F4',
+    bg: '#E8F0FE',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>'
+  },
+  tiktok: {
+    label: 'TikTok',
+    color: '#010101',
+    bg: '#F0F0F0',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.75a8.18 8.18 0 004.77 1.52V6.84a4.84 4.84 0 01-1-.15z" fill="#010101"/></svg>'
+  },
+  snapchat: {
+    label: 'Snapchat',
+    color: '#FFFC00',
+    bg: '#FFFDE6',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M12.2 2c-1.5 0-3.78.6-4.86 3.2-.36.88-.28 2.36-.2 3.52l.01.16c-.36.18-.74.15-1.08.06-.2-.06-.36-.14-.52-.14-.5 0-.86.44-.86.86 0 .56.52.86.96 1.04.14.06.3.1.44.16.28.12.54.28.62.56.08.24 0 .52-.1.74-.56 1.14-1.4 2.04-2.48 2.56-.26.12-.46.22-.52.42-.08.28.14.56.42.72.52.28 1.1.4 1.62.58.14.04.28.12.32.28.1.36-.02.78.38.96.36.16.86-.04 1.46-.04.44 0 .82.36 1.58.68.76.32 1.72.72 3.38.72 1.66 0 2.62-.4 3.38-.72.76-.32 1.14-.68 1.58-.68.6 0 1.1.2 1.46.04.4-.18.28-.6.38-.96.04-.16.18-.24.32-.28.52-.18 1.1-.3 1.62-.58.28-.16.5-.44.42-.72-.06-.2-.26-.3-.52-.42-1.08-.52-1.92-1.42-2.48-2.56-.1-.22-.18-.5-.1-.74.08-.28.34-.44.62-.56.14-.06.3-.1.44-.16.44-.18.96-.48.96-1.04 0-.42-.36-.86-.86-.86-.16 0-.32.08-.52.14-.34.1-.72.12-1.08-.06l.01-.16c.08-1.16.16-2.64-.2-3.52C15.98 2.6 13.7 2 12.2 2z" fill="#FFFC00" stroke="#333" stroke-width=".6"/></svg>'
+  },
+  pinterest: {
+    label: 'Pinterest',
+    color: '#E60023',
+    bg: '#FDE8EC',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.181-.78 1.172-4.97 1.172-4.97s-.299-.598-.299-1.482c0-1.388.806-2.425 1.808-2.425.853 0 1.265.64 1.265 1.408 0 .858-.546 2.14-.828 3.33-.236.995.499 1.806 1.48 1.806 1.778 0 3.144-1.874 3.144-4.58 0-2.393-1.72-4.068-4.177-4.068-2.845 0-4.515 2.135-4.515 4.34 0 .859.331 1.781.745 2.282a.3.3 0 01.069.287l-.278 1.133c-.044.183-.145.222-.335.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.965-.527-2.291-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#E60023"/></svg>'
+  },
+  linkedin: {
+    label: 'LinkedIn',
+    color: '#0A66C2',
+    bg: '#E7F0F9',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" fill="#0A66C2"/></svg>'
+  },
+  apple: {
+    label: 'Apple Search Ads',
+    color: '#555555',
+    bg: '#F0F0F0',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#555"/></svg>'
+  },
+  amazon: {
+    label: 'Amazon Ads',
+    color: '#FF9900',
+    bg: '#FFF4E5',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705a.66.66 0 01-.753.077c-1.06-.878-1.247-1.287-1.826-2.126-1.748 1.783-2.986 2.317-5.249 2.317-2.68 0-4.764-1.653-4.764-4.96 0-2.583 1.401-4.34 3.392-5.2 1.726-.761 4.136-.897 5.98-1.107v-.413c0-.761.058-1.661-.39-2.318-.388-.59-1.137-.834-1.798-.834-1.22 0-2.312.626-2.578 1.924-.055.287-.266.57-.554.584l-3.096-.334c-.261-.058-.552-.27-.477-.67C5.821 1.883 9.248.75 12.327.75c1.57 0 3.619.418 4.858 1.606 1.57 1.467 1.42 3.425 1.42 5.557v5.032c0 1.513.628 2.175 1.218 2.994.21.291.254.644-.01.86-.66.553-1.834 1.582-2.478 2.157l-.19-.162z" fill="#FF9900"/><path d="M21.365 19.34c-1.296 1.02-3.18 1.56-4.8 1.56-2.27 0-4.315-.84-5.863-2.24-.121-.11-.013-.26.133-.175 1.67.973 3.735 1.56 5.868 1.56 1.44 0 3.02-.298 4.477-.917.22-.093.404.145.185.213z" fill="#FF9900"/></svg>'
+  },
+  dv360: {
+    label: 'DV360',
+    color: '#34A853',
+    bg: '#E6F4EA',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="#34A853" opacity=".12"/><path d="M7 12.5l3 3 7-7" stroke="#34A853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  },
+  gsheets: {
+    label: 'Google Sheets',
+    color: '#34A853',
+    bg: '#E6F4EA',
+    logo: '<svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" fill="#34A853"/><path d="M14 2v6h6" fill="#2D9249"/><rect x="7" y="13" width="10" height="1.5" rx=".5" fill="white"/><rect x="7" y="16" width="7" height="1.5" rx=".5" fill="white" opacity=".7"/></svg>'
+  }
+};
+
+const TYPE_CHANNELS = {
+  GA:    ['meta', 'google', 'tiktok', 'snapchat', 'pinterest', 'linkedin'],
+  SA360: ['google', 'meta', 'dv360'],
+  Adobe: ['meta', 'google', 'tiktok', 'snapchat', 'amazon'],
+  MMP:   ['meta', 'google', 'tiktok', 'snapchat', 'apple'],
+  S2S:   ['meta', 'google', 'tiktok', 'snapchat'],
+  RSC:   ['gsheets']
+};
+
 const SAMPLE_SHEET_DATA = {
   headers: ['channel', 'Condition dimension', 'condition 1', 'Condition 2', 'Start date', 'End date', 'Metric name (and its values in this column)'],
   rows: [
@@ -674,6 +882,11 @@ let editingId = null;
 let deletingId = null;
 let nextId = 1;
 
+let filterSearch = '';
+let filterAccounts = [];
+let filterStatuses = [];
+let openPanel = null;
+
 let rscWizardStep = 1;
 let rscWizardState = {};
 let rscEditingId = null;
@@ -686,20 +899,252 @@ function getStatusDescription(i) {
   if (i.type === 'RSC' && i.rsc?.validation) {
     return `Connected \u2022 ${i.rsc.validation.matched}/${i.rsc.validation.totalRows} rows matched`;
   }
-  if (i.status === 'active') return i.accounts.length > 0 ? `Connected \u2022 ${i.accounts.join(', ')}` : 'Connected';
+  if (i.status === 'active') return i.accounts.length > 0 ? `Connected \u2022 ${i.accounts.map(a => a.replace(/^Ad Account\s*[-–—]\s*/i, '')).join(', ')}` : 'Connected';
   if (i.status === 'error') return 'Error \u2022 Check configuration';
   if (i.status === 'syncing') return 'Syncing data...';
   return 'Not connected';
 }
 function getTypeLabel(t) { return INTEGRATION_TYPES.find(x => x.id === t)?.label || t; }
-function getTypeEmoji(t) { return { GA:'\ud83d\udcca', GA_X:'\ud83d\udcca', MMP:'\ud83d\udcf1', Adobe:'\ud83c\udfa8', Meta:'\ud83d\udd35', SA360:'\ud83d\udd0d', S2S:'\ud83d\udd17', CXS:'\u2728', RSC:'\ud83d\udcc1' }[t] || '\ud83d\udd0c'; }
-function resolveType(t) { return t === 'GA_X' ? 'GA' : t; }
+function getTypeIcon(t) {
+  return {
+    GA: '<span class="mi" style="font-size:inherit">analytics</span>',
+    SA360: '<span class="mi" style="font-size:inherit">saved_search</span>',
+    Adobe: '<span class="mi" style="font-size:inherit">palette</span>',
+    MMP: '<span class="mi" style="font-size:inherit">smartphone</span>',
+    S2S: '<span class="mi" style="font-size:inherit">cable</span>',
+    RSC: '<span class="mi" style="font-size:inherit">folder_open</span>'
+  }[t] || '<span class="mi" style="font-size:inherit">extension</span>';
+}
+function getTypeCategoryIcon(t) {
+  const cat = INTEGRATION_TYPES.find(x => x.id === t)?.category;
+  const entry = CATEGORIES.find(c => c.id === cat);
+  return entry ? entry.icon : CATEGORIES[0].icon;
+}
+function getTypeColor(t) {
+  const cat = INTEGRATION_TYPES.find(x => x.id === t)?.category;
+  return { measurement: '#EDE9FE', reporting: '#E6F4EA' }[cat] || '#F5F5F5';
+}
+function resolveType(t) { return t; }
 function colLetter(i) { return String.fromCharCode(65 + i); }
 
-function filterIntegrations() {
-  if (activeTab === 'all') return integrations;
-  return integrations.filter(i => i.category === activeTab || i.category === 'all');
+function getChannelLogosHtml(type, maxVisible) {
+  maxVisible = maxVisible || 5;
+  const channelIds = TYPE_CHANNELS[type] || [];
+  if (!channelIds.length) return '';
+  const visible = channelIds.slice(0, maxVisible);
+  const remaining = channelIds.length - maxVisible;
+  let html = visible.map(id => {
+    const ch = CHANNELS[id];
+    if (!ch) return '';
+    return `<span class="channel-logo" style="background:${ch.bg}" title="${ch.label}">${ch.logo}</span>`;
+  }).join('');
+  if (remaining > 0) {
+    html += `<span class="channel-logo-more" title="${channelIds.slice(maxVisible).map(id => CHANNELS[id]?.label).filter(Boolean).join(', ')}">+${remaining}</span>`;
+  }
+  return html;
 }
+
+function filterIntegrations() {
+  let result = integrations;
+
+  if (activeTab !== 'all') {
+    result = result.filter(i => i.category === activeTab || i.category === 'all');
+  }
+  if (filterSearch) {
+    const q = filterSearch.toLowerCase();
+    result = result.filter(i =>
+      i.name.toLowerCase().includes(q) ||
+      getTypeLabel(i.type).toLowerCase().includes(q)
+    );
+  }
+  if (filterAccounts.length > 0) {
+    result = result.filter(i =>
+      i.accounts && filterAccounts.some(acc => i.accounts.includes(acc))
+    );
+  }
+  if (filterStatuses.length > 0) {
+    result = result.filter(i => filterStatuses.includes(i.status));
+  }
+  return result;
+}
+
+const STATUS_OPTIONS = [
+  { id: 'active', label: 'Connected', color: '#22c55e' },
+  { id: 'error', label: 'Error', color: '#ef4444' },
+  { id: 'syncing', label: 'Syncing', color: '#f59e0b' },
+  { id: 'inactive', label: 'Not connected', color: '#d1d5db' }
+];
+
+function hasActiveFilters() {
+  return filterSearch || filterAccounts.length > 0 || filterStatuses.length > 0;
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  const checkSvg = '<span class="mi" style="font-size:14px;color:white">check</span>';
+
+  bar.innerHTML = `
+    <div class="filter-search">
+      <span class="mi filter-search-icon" style="font-size:16px">search</span>
+      <input type="text" id="filter-search-input" placeholder="Search integrations\u2026" value="${filterSearch}" oninput="onFilterSearch(this.value)">
+    </div>
+    <div class="filter-dropdown" id="account-filter">
+      <button class="filter-dropdown-btn ${filterAccounts.length ? 'has-selection' : ''}" onclick="togglePanel('account')">
+        <span class="mi" style="font-size:16px">person</span>
+        Account${filterAccounts.length ? '' : 's'}
+        ${filterAccounts.length ? '<span class="filter-badge">' + filterAccounts.length + '</span>' : ''}
+        <span class="mi" style="font-size:14px;margin-left:2px">expand_more</span>
+      </button>
+      <div class="filter-panel ${openPanel === 'account' ? 'open' : ''}" id="account-panel">
+        <div class="filter-panel-header">
+          <span>Ad Accounts</span>
+          ${filterAccounts.length ? '<button class="filter-panel-clear" onclick="clearAccountFilter(event)">Clear all</button>' : ''}
+        </div>
+        ${ACCOUNTS.map(acc => `
+          <div class="filter-option ${filterAccounts.includes(acc) ? 'selected' : ''}" onclick="toggleFilterAccount('${acc.replace(/'/g, "\\'")}')">
+            <span class="check-box">${checkSvg}</span>
+            <span>${acc}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="filter-dropdown" id="status-filter">
+      <button class="filter-dropdown-btn ${filterStatuses.length ? 'has-selection' : ''}" onclick="togglePanel('status')">
+        <span class="mi" style="font-size:16px">filter_list</span>
+        Status
+        ${filterStatuses.length ? '<span class="filter-badge">' + filterStatuses.length + '</span>' : ''}
+        <span class="mi" style="font-size:14px;margin-left:2px">expand_more</span>
+      </button>
+      <div class="filter-panel ${openPanel === 'status' ? 'open' : ''}" id="status-panel">
+        <div class="filter-panel-header">
+          <span>Status</span>
+          ${filterStatuses.length ? '<button class="filter-panel-clear" onclick="clearStatusFilter(event)">Clear all</button>' : ''}
+        </div>
+        ${STATUS_OPTIONS.map(s => `
+          <div class="filter-option ${filterStatuses.includes(s.id) ? 'selected' : ''}" onclick="toggleFilterStatus('${s.id}')">
+            <span class="check-box">${checkSvg}</span>
+            <span class="filter-option-dot" style="background:${s.color}"></span>
+            <span>${s.label}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <span class="filter-results-count" id="filter-count"></span>
+  `;
+
+  renderActiveFilters();
+  updateFilterCount();
+}
+
+function renderActiveFilters() {
+  const el = document.getElementById('active-filters');
+  if (!hasActiveFilters()) { el.innerHTML = ''; el.style.marginBottom = '0'; return; }
+  el.style.marginBottom = '16px';
+
+  const chips = [];
+  filterAccounts.forEach(acc => {
+    chips.push(`<span class="active-filter-chip">${acc}<button onclick="removeFilterAccount('${acc.replace(/'/g, "\\'")}')">&times;</button></span>`);
+  });
+  filterStatuses.forEach(sid => {
+    const s = STATUS_OPTIONS.find(x => x.id === sid);
+    chips.push(`<span class="active-filter-chip">${s?.label || sid}<button onclick="removeFilterStatus('${sid}')">&times;</button></span>`);
+  });
+  if (filterSearch) {
+    chips.push(`<span class="active-filter-chip">Search: "${filterSearch}"<button onclick="clearSearch()">&times;</button></span>`);
+  }
+  chips.push('<button class="filter-clear-all" onclick="clearAllFilters()">Clear all</button>');
+  el.innerHTML = chips.join('');
+}
+
+function updateFilterCount() {
+  const total = integrations.length;
+  const shown = filterIntegrations().length;
+  const el = document.getElementById('filter-count');
+  if (el) {
+    el.textContent = hasActiveFilters() ? `${shown} of ${total} integration${total !== 1 ? 's' : ''}` : '';
+  }
+}
+
+function onFilterSearch(val) {
+  filterSearch = val.trim();
+  renderList();
+  renderActiveFilters();
+  updateFilterCount();
+}
+
+function togglePanel(panel) {
+  openPanel = openPanel === panel ? null : panel;
+  renderFilterBar();
+  if (openPanel) {
+    setTimeout(() => {
+      document.getElementById('filter-search-input')?.blur();
+    }, 0);
+  }
+}
+
+function toggleFilterAccount(acc) {
+  const idx = filterAccounts.indexOf(acc);
+  if (idx >= 0) filterAccounts.splice(idx, 1);
+  else filterAccounts.push(acc);
+  renderFilterBar();
+  renderList();
+}
+
+function toggleFilterStatus(sid) {
+  const idx = filterStatuses.indexOf(sid);
+  if (idx >= 0) filterStatuses.splice(idx, 1);
+  else filterStatuses.push(sid);
+  renderFilterBar();
+  renderList();
+}
+
+function removeFilterAccount(acc) {
+  filterAccounts = filterAccounts.filter(a => a !== acc);
+  renderFilterBar();
+  renderList();
+}
+
+function removeFilterStatus(sid) {
+  filterStatuses = filterStatuses.filter(s => s !== sid);
+  renderFilterBar();
+  renderList();
+}
+
+function clearAccountFilter(e) {
+  e.stopPropagation();
+  filterAccounts = [];
+  renderFilterBar();
+  renderList();
+}
+
+function clearStatusFilter(e) {
+  e.stopPropagation();
+  filterStatuses = [];
+  renderFilterBar();
+  renderList();
+}
+
+function clearSearch() {
+  filterSearch = '';
+  renderFilterBar();
+  renderList();
+}
+
+function clearAllFilters() {
+  filterSearch = '';
+  filterAccounts = [];
+  filterStatuses = [];
+  openPanel = null;
+  renderFilterBar();
+  renderList();
+}
+
+document.addEventListener('click', function(e) {
+  if (openPanel && !e.target.closest('.filter-dropdown')) {
+    openPanel = null;
+    renderFilterBar();
+  }
+});
 
 /* ═══════════════════════════════════════════════
    RENDER: TABS + LIST
@@ -709,37 +1154,52 @@ function renderTabs() {
     <button class="tab ${activeTab === c.id ? 'active' : ''}" onclick="setTab('${c.id}')">${c.icon} ${c.label}</button>
   `).join('');
 }
-function setTab(id) { activeTab = id; renderTabs(); renderList(); }
+function setTab(id) { activeTab = id; renderTabs(); renderList(); renderFilterBar(); }
 
 function renderList() {
   const el = document.getElementById('integration-list');
   const items = filterIntegrations();
   if (!items.length) {
+    const filtered = hasActiveFilters();
     el.innerHTML = `<div class="empty-state">
       <div class="empty-state-illustration"><img src="empty-illustration.png" alt="No content illustration"></div>
       <div class="empty-state-content">
         <div class="empty-state-text">
-          <h2 class="empty-state-title">No integrations found in this category</h2>
-          <p class="empty-state-desc">Add a new integration to get started.</p>
+          <h2 class="empty-state-title">${filtered ? 'No integrations match your filters' : 'No integrations found in this category'}</h2>
+          <p class="empty-state-desc">${filtered ? 'Try adjusting your search or filter criteria.' : 'Add a new integration to get started.'}</p>
         </div>
-        <button class="btn-primary" onclick="openAddModal()">Add new integration</button>
+        ${filtered
+          ? '<button class="btn-secondary" onclick="clearAllFilters()">Clear all filters</button>'
+          : '<button class="btn-primary" onclick="openAddModal()">Add new integration</button>'}
       </div>
     </div>`;
+    updateFilterCount();
     return;
   }
-  el.innerHTML = items.map(item => `
+  el.innerHTML = items.map(item => {
+    const matchedAccounts = filterAccounts.length > 0 && item.accounts
+      ? item.accounts.filter(a => filterAccounts.includes(a))
+      : [];
+    const accountHint = matchedAccounts.length > 0
+      ? `<span style="font-size:12px;color:var(--fill-primary-active);margin-left:4px">(${matchedAccounts.join(', ')})</span>`
+      : '';
+    const channelLogos = getChannelLogosHtml(item.type, 5);
+    return `
     <div class="integration-card" onclick="showDetail('${item.id}')">
+      <div class="card-icon" style="background:${getTypeColor(item.type)}">${getTypeCategoryIcon(item.type)}</div>
       <div class="card-content">
         <div class="card-name">${item.name}</div>
-        <div class="card-description"><span class="status-dot ${item.status}"></span>${getStatusDescription(item)}</div>
+        <div class="card-description"><span class="status-dot ${item.status}"></span>${getStatusDescription(item)}${accountHint}</div>
+        ${channelLogos ? `<div class="card-channels">${channelLogos}</div>` : ''}
       </div>
       <div class="card-actions" onclick="event.stopPropagation()">
-        <button class="card-action-btn" onclick="showDetail('${item.id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-        <button class="card-action-btn delete" onclick="openDeleteModal('${item.id}')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        <button class="card-action-btn" onclick="showDetail('${item.id}')" title="Edit"><span class="mi" style="font-size:16px">edit</span></button>
+        <button class="card-action-btn delete" onclick="openDeleteModal('${item.id}')" title="Delete"><span class="mi" style="font-size:16px">delete</span></button>
       </div>
-      <div class="card-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></div>
-    </div>
-  `).join('');
+      <div class="card-chevron"><span class="mi" style="font-size:20px">chevron_right</span></div>
+    </div>`;
+  }).join('');
+  updateFilterCount();
 }
 
 /* ═══════════════════════════════════════════════
@@ -764,12 +1224,12 @@ function showDetail(id) {
   const showMMP = item.type === 'MMP';
 
   d.innerHTML = `
-    <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7"/></svg> Back to integrations</button>
+    <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><span class="mi" style="font-size:16px">arrow_back</span> Back to integrations</button>
     <div class="detail-header">
       <div class="detail-title-row"><h2 class="detail-title">${item.name}</h2><span class="status-badge ${item.status}"><span class="status-dot ${item.status}"></span>${getStatusLabel(item.status)}</span></div>
       <div class="detail-actions">
-        <button class="btn-primary" onclick="saveDetailInline('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 13l4 4L19 7"/></svg> Save</button>
-        <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete</button>
+        <button class="btn-primary" onclick="saveDetailInline('${item.id}')"><span class="mi" style="font-size:16px">check</span> Save</button>
+        <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><span class="mi" style="font-size:16px">delete</span> Delete</button>
       </div>
     </div>
 
@@ -801,7 +1261,7 @@ function showDetail(id) {
     </div>` : ''}
 
     <div class="detail-section"><div class="detail-section-title">Account Mapping</div>
-      <div class="detail-row"><span class="detail-key">Linked accounts</span><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item.accounts.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>${acc}</div>`).join('')}</div></div>
+      <div class="detail-row"><span class="detail-key">Linked accounts</span><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item.accounts.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><span class="mi" style="font-size:12px;color:white">check</span></span>${acc}</div>`).join('')}</div></div>
     </div>
   `;
 }
@@ -848,13 +1308,13 @@ function renderRscDetail(el, item) {
   const data = rsc?.previewData || { headers: [], rows: [] };
 
   el.innerHTML = `
-    <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 19l-7-7 7-7"/></svg> Back to integrations</button>
+    <button class="btn-ghost" onclick="backToList()" style="margin-bottom:20px"><span class="mi" style="font-size:16px">arrow_back</span> Back to integrations</button>
     <div class="detail-header">
       <div class="detail-title-row"><h2 class="detail-title">${item.name}</h2><span class="status-badge ${item.status}"><span class="status-dot ${item.status}"></span>${getStatusLabel(item.status)}</span></div>
       <div class="detail-actions">
-        <button class="btn-secondary" onclick="openRscWizard('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Re-sync</button>
-        <button class="btn-primary" onclick="saveRscDetailInline('${item.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 13l4 4L19 7"/></svg> Save</button>
-        <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete</button>
+        <button class="btn-secondary" onclick="openRscWizard('${item.id}')"><span class="mi" style="font-size:16px">sync</span> Re-sync</button>
+        <button class="btn-primary" onclick="saveRscDetailInline('${item.id}')"><span class="mi" style="font-size:16px">check</span> Save</button>
+        <button class="btn-danger" onclick="openDeleteModal('${item.id}')" style="padding:10px 16px"><span class="mi" style="font-size:16px">delete</span> Delete</button>
       </div>
     </div>
 
@@ -902,7 +1362,7 @@ function renderRscDetail(el, item) {
       </div>
     </div>` : `
     <div class="callout info" style="margin-top:8px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="mi" style="font-size:20px">info</span>
       <p>No spreadsheet connected yet. Use the <strong>Re-sync</strong> button after entering a Sheet URL to pull data.</p>
     </div>`}
   `;
@@ -972,7 +1432,7 @@ function renderGenericForm(item) {
         <div class="type-category">
           <div class="type-category-label">${cat.label}</div>
           <div class="type-selector ${cat.types.length === 1 ? 'single' : ''}">
-            ${cat.types.map(tid => { const t = INTEGRATION_TYPES.find(x => x.id === tid); return t ? `<div class="type-option ${selectedType === t.id ? 'selected' : ''}" data-type="${t.id}" onclick="selectType('${t.id}')"><div class="type-option-icon">${getTypeEmoji(t.id)}</div>${t.label}</div>` : ''; }).join('')}
+            ${cat.types.map(tid => { const t = INTEGRATION_TYPES.find(x => x.id === tid); return t ? `<div class="type-option ${selectedType === t.id ? 'selected' : ''}" data-type="${t.id}" onclick="selectType('${t.id}')"><div class="type-option-icon">${getTypeIcon(t.id)}</div>${t.label}</div>` : ''; }).join('')}
           </div>
         </div>
       `).join('')}
@@ -993,7 +1453,7 @@ function renderGenericForm(item) {
       <div class="form-group"><label class="form-label">Events</label><div class="form-tags" id="events-container" onclick="document.getElementById('event-input').focus()">${(item?.settings?.events || []).map(e => `<span class="form-tag" data-event="${e}">${e}<button onclick="removeEvent(this)">&times;</button></span>`).join('')}<input type="text" id="event-input" placeholder="Type event name and press Enter" onkeydown="handleEventKey(event)"></div><div class="form-hint">Press Enter to add each event name</div></div>
     </div>
     <div class="form-section conditional-fields ${item?.type === 'GA' || item?.type === 'SA360' ? 'visible' : ''}" id="section-utm"><div class="form-section-title">Tracking Settings</div><div class="form-group"><label class="form-label">UTM Parameter</label><select class="form-select" id="field-utmParam"><option value="">Select UTM parameter...</option><option value="utm_id" ${item?.settings?.utmConfig?.parameter === 'utm_id' ? 'selected' : ''}>utm_id (recommended)</option><option value="utm_campaign" ${item?.settings?.utmConfig?.parameter === 'utm_campaign' ? 'selected' : ''}>utm_campaign</option><option value="utm_source" ${item?.settings?.utmConfig?.parameter === 'utm_source' ? 'selected' : ''}>utm_source</option><option value="utm_medium" ${item?.settings?.utmConfig?.parameter === 'utm_medium' ? 'selected' : ''}>utm_medium</option></select></div></div>
-    <div class="form-section"><div class="form-section-title">Account Mapping</div><div class="form-group"><label class="form-label">Link ad accounts</label><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item?.accounts?.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>${acc}</div>`).join('')}</div></div></div>
+    <div class="form-section"><div class="form-section-title">Account Mapping</div><div class="form-group"><label class="form-label">Link ad accounts</label><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item?.accounts?.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><span class="mi" style="font-size:12px;color:white">check</span></span>${acc}</div>`).join('')}</div></div></div>
   `;
   footer.innerHTML = `<button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="saveGenericIntegration()">${isEdit ? 'Update integration' : 'Connect'}</button>`;
   if (isEdit) updateFieldVisibility(item.type);
@@ -1107,7 +1567,7 @@ function renderRscStep() {
       </div>
       <div class="form-section"><div class="form-section-title">Google Spreadsheet</div>
         <div class="sheets-connect">
-          <div class="sheets-icon"><svg viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#34a853" opacity="0.1"/><path d="M14 10h14l8 8v20a2 2 0 01-2 2H14a2 2 0 01-2-2V12a2 2 0 012-2z" fill="#34a853"/><path d="M28 10v8h8" fill="#2d9249"/><rect x="16" y="22" width="16" height="2" rx="1" fill="white"/><rect x="16" y="26" width="12" height="2" rx="1" fill="white" opacity="0.7"/><rect x="16" y="30" width="14" height="2" rx="1" fill="white" opacity="0.5"/></svg></div>
+          <div class="sheets-icon" style="display:flex;align-items:center;justify-content:center"><span class="mi" style="font-size:48px;color:#34a853">description</span></div>
           <h3>Paste your Google Spreadsheet URL</h3>
           <p>Share your spreadsheet with Smartly and paste the link below. The spreadsheet should contain your multiplier data, response curves, or other metrics.</p>
           <div class="sheets-url-row">
@@ -1117,7 +1577,7 @@ function renderRscStep() {
           <div class="form-error" id="rsc-url-error" style="text-align:center;margin-top:8px">Please enter a valid Google Spreadsheet URL</div>
         </div>
       </div>
-      ${rscWizardState.sheetConnected ? `<div class="callout success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p>Spreadsheet connected successfully! Found ${SAMPLE_SHEET_DATA.headers.length} columns and ${SAMPLE_SHEET_DATA.rows.length} data rows.</p></div>` : ''}
+      ${rscWizardState.sheetConnected ? `<div class="callout success"><span class="mi" style="font-size:20px">check_circle</span><p>Spreadsheet connected successfully! Found ${SAMPLE_SHEET_DATA.headers.length} columns and ${SAMPLE_SHEET_DATA.rows.length} data rows.</p></div>` : ''}
       ${rscWizardState.sheetConnected ? `<div class="form-section"><div class="form-section-title">Sheet Details</div><div class="form-group"><label class="form-label">Sheet / Tab name</label><input type="text" class="form-input" id="rsc-sheet-name" placeholder="e.g., Sheet1" value="${rscWizardState.sheetName}"><div class="form-hint">The specific tab within the spreadsheet to read from</div></div></div>` : ''}
     `;
     footer.innerHTML = `<button class="btn-secondary" onclick="closeRscModal()">Cancel</button><button class="btn-primary" onclick="rscNext()" ${rscWizardState.sheetConnected ? '' : 'disabled'}>Next: Map columns</button>`;
@@ -1129,7 +1589,7 @@ function renderRscStep() {
     if (!Object.keys(rscWizardState.mapping).length) rscWizardState.mapping = defaultMapping;
 
     body.innerHTML = stepperHtml + `
-      <div class="callout info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p>Map each spreadsheet column to a Smartly field. The data granularity determines which Smartly dimension the values are matched against.</p></div>
+      <div class="callout info"><span class="mi" style="font-size:20px">info</span><p>Map each spreadsheet column to a Smartly field. The data granularity determines which Smartly dimension the values are matched against.</p></div>
       <div class="form-section"><div class="form-section-title">Data Granularity Level</div>
         <div class="granularity-grid" id="gran-grid">
           ${GRANULARITY_LEVELS.map(g => `<div class="gran-option ${rscWizardState.granularity === g.id ? 'selected' : ''}" data-gran="${g.id}" onclick="selectGranularity('${g.id}')">${g.label}</div>`).join('')}
@@ -1170,7 +1630,7 @@ function renderRscStep() {
     const unmatchedRow = data.rows[data.rows.length - 1];
 
     body.innerHTML = stepperHtml + `
-      <div class="callout info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p>We've synced the data from your spreadsheet and matched it against your Smartly assets. Review the results below.</p></div>
+      <div class="callout info"><span class="mi" style="font-size:20px">info</span><p>We've synced the data from your spreadsheet and matched it against your Smartly assets. Review the results below.</p></div>
       <div class="validation-card">
         <div class="validation-header">
           <h4>Match Results</h4>
@@ -1184,7 +1644,7 @@ function renderRscStep() {
           <div class="validation-row"><span class="validation-label">Unmatched rows (no matching asset found)</span><span class="validation-value" style="color:var(--amber-700)">${unmatched}</span></div>
         </div>
       </div>
-      ${unmatched > 0 ? `<div class="callout warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><p><strong>${unmatched} row could not be matched.</strong> Row has channel="${unmatchedRow[0]}", condition="${unmatchedRow[2]}" — end date is empty, so the value will be overwritten on the next ingestion.</p></div>` : ''}
+      ${unmatched > 0 ? `<div class="callout warning"><span class="mi" style="font-size:20px">warning</span><p><strong>${unmatched} row could not be matched.</strong> Row has channel="${unmatchedRow[0]}", condition="${unmatchedRow[2]}" — end date is empty, so the value will be overwritten on the next ingestion.</p></div>` : ''}
       <div class="form-section"><div class="form-section-title">Data Preview</div>
         <div class="preview-scroll"><table class="preview-table">
           <thead><tr>${data.headers.map((h,i) => `<th>${colLetter(i)}: ${h}</th>`).join('')}<th>Status</th></tr></thead>
@@ -1207,7 +1667,7 @@ function renderRscStep() {
     }).join('');
 
     body.innerHTML = stepperHtml + `
-      <div class="callout success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p>Everything looks good! Review your configuration below and click <strong>Save &amp; Connect</strong> to finalize.</p></div>
+      <div class="callout success"><span class="mi" style="font-size:20px">check_circle</span><p>Everything looks good! Review your configuration below and click <strong>Save &amp; Connect</strong> to finalize.</p></div>
       <div class="detail-section" style="margin-bottom:16px"><div class="detail-section-title">Summary</div>
         <div class="detail-row"><span class="detail-key">Name</span><span class="detail-value">${rscWizardState.name}</span></div>
         <div class="detail-row"><span class="detail-key">Source</span><span class="detail-value">Google Spreadsheet</span></div>
@@ -1336,6 +1796,7 @@ function showToast(msg, type) {
 
 /* Init */
 renderTabs();
+renderFilterBar();
 renderList();
 </script>
 </body>

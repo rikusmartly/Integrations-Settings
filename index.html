@@ -48,6 +48,7 @@
     color: var(--fg-strong);
     min-height: 100vh;
     display: flex;
+    padding-left: 100px;
   }
 
   /* ── Sidebar ── */
@@ -94,7 +95,7 @@
   }
 
   /* ── Main ── */
-  .main { margin-left: 100px; padding: 30px 40px 60px; max-width: 920px; width: 100%; }
+  .main { margin: 0 auto; padding: 30px 40px 60px; max-width: 920px; width: 100%; }
 
   /* ── Breadcrumbs ── */
   .breadcrumbs { display: flex; align-items: center; gap: 4px; margin-bottom: 22px; }
@@ -238,7 +239,7 @@
     box-shadow: var(--shadow-lg); width: 560px; max-height: 90vh; overflow-y: auto;
     transform: translateY(16px) scale(0.97); transition: transform 0.25s;
   }
-  .modal.wide { width: 720px; }
+  .modal.wide { width: 860px; }
   .modal-overlay.visible .modal { transform: translateY(0) scale(1); }
   .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 24px 0; }
   .modal-title {
@@ -651,7 +652,12 @@
 <nav class="sidebar">
   <div class="sidebar-top">
     <div class="sidebar-logo">
-      <svg viewBox="0 0 20 10" fill="none"><path d="M0 5L6 0V3H14V0L20 5L14 10V7H6V10L0 5Z" fill="white"/></svg>
+      <svg viewBox="-135 224 198 103" fill="none">
+        <polygon points="-69.1,310.2 -131.6,297.9 -131.6,275.1 -69.1,275.1" fill="#FCE24A"/>
+        <polygon points="-2.8,275.1 -69.1,275.1 -69.1,227 -2.8,240" fill="white" opacity="0.9"/>
+        <polygon points="-2.8,323.2 -69.1,310.2 -69.1,275.1 -2.8,275.1" fill="#38A7C8"/>
+        <polygon points="-2.8,240 59.8,252.3 59.8,275.1 -2.8,275.1" fill="#F16179"/>
+      </svg>
     </div>
     <div class="sidebar-nav">
       <div class="sidebar-icon"><span class="mi">home</span></div>
@@ -761,7 +767,7 @@ const INTEGRATION_TYPES = [
   { id: 'Adobe', label: 'Adobe Analytics', category: 'measurement' },
   { id: 'MMP', label: 'Mobile Measurement Partners', category: 'measurement' },
   { id: 'S2S', label: 'Server to Server API', category: 'measurement' },
-  { id: 'RSC', label: 'Reporting Standard Connector', category: 'reporting' }
+  { id: 'RSC', label: 'Reporting Standard Connector', category: 'reporting', desc: 'Bring your external data, like marketing mix modeling (MMM) multipliers, customer lifetime value (LTV) data, or other client-specific information, directly into Smartly.' }
 ];
 const SETUP_CATEGORIES = [
   { id: 'measurement', label: 'Measurement Integrations', types: ['GA', 'SA360', 'Adobe', 'MMP', 'S2S'] },
@@ -890,6 +896,10 @@ let openPanel = null;
 let rscWizardStep = 1;
 let rscWizardState = {};
 let rscEditingId = null;
+
+let wizStep = 1;
+let wizType = '';
+let wizState = {};
 
 /* ═══════════════════════════════════════════════
    HELPERS
@@ -1403,77 +1413,173 @@ function backToList() {
 }
 
 /* ═══════════════════════════════════════════════
-   GENERIC ADD/EDIT MODAL (non-RSC)
+   GENERIC ADD/EDIT WIZARD (non-RSC)
    ═══════════════════════════════════════════════ */
 function openAddModal() {
   editingId = null;
-  document.getElementById('modal-title').textContent = 'Add new integration';
-  renderGenericForm(null);
+  wizStep = 0;
+  wizType = '';
+  wizState = { name: '', timezone: '', apiToken: '', clientId: '', clientSecret: '', propertyId: '', appId: '', reportSuiteId: '', utmParam: '', events: [], accounts: [] };
+  renderWizStep();
   document.getElementById('modal-overlay').classList.add('visible');
 }
 function openEditModal(id) {
   editingId = id;
-  document.getElementById('modal-title').textContent = 'Edit integration';
-  renderGenericForm(integrations.find(i => i.id === id));
+  const item = integrations.find(i => i.id === id);
+  if (item.type === 'RSC') { openRscWizard(id); return; }
+  wizType = item.type;
+  wizStep = 1;
+  wizState = {
+    name: item.name,
+    timezone: item.settings?.timezone || '',
+    apiToken: item.settings?.credentials?.apiToken || '',
+    clientId: item.settings?.credentials?.clientId || '',
+    clientSecret: item.settings?.credentials?.clientSecret || '',
+    propertyId: item.settings?.externalIds?.propertyId || '',
+    appId: item.settings?.externalIds?.appId || '',
+    reportSuiteId: item.settings?.externalIds?.reportSuiteId || '',
+    utmParam: item.settings?.utmConfig?.parameter || '',
+    events: [...(item.settings?.events || [])],
+    accounts: [...(item.accounts || [])]
+  };
+  document.getElementById('modal').classList.add('wide');
+  renderWizStep();
   document.getElementById('modal-overlay').classList.add('visible');
 }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('visible'); editingId = null; }
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('visible');
+  document.getElementById('modal').classList.remove('wide');
+  editingId = null;
+}
 function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 
-function renderGenericForm(item) {
-  const isEdit = !!item;
+function wizStepperHtml(s) {
+  const labels = ['General', 'Authenticate', 'Configure', 'Review'];
+  return `<div class="stepper">${labels.map((l, i) => {
+    const n = i + 1;
+    const cls = s > n ? 'done' : s === n ? 'active' : '';
+    return `${i > 0 ? `<div class="stepper-line ${s > n ? 'done' : ''}"></div>` : ''}<div class="stepper-step ${cls}"><div class="stepper-num">${s > n ? '\u2713' : n}</div><span class="stepper-label">${l}</span></div>`;
+  }).join('')}</div>`;
+}
+
+function renderWizStep() {
+  const modal = document.getElementById('modal');
+  const title = document.getElementById('modal-title');
   const body = document.getElementById('modal-body');
   const footer = document.getElementById('modal-footer');
-  const selectedType = item ? item.type : '';
+  const s = wizStep;
+  const isEdit = !!editingId;
+  const isGA = wizType === 'GA' || wizType === 'SA360';
+  const isAdobe = wizType === 'Adobe';
+  const isMMP = wizType === 'MMP';
 
-  body.innerHTML = `
-    ${!isEdit ? `<div class="form-section"><div class="form-section-title">Choose integration type</div>
+  if (s === 0) {
+    modal.classList.remove('wide');
+    title.textContent = 'Add new integration';
+    body.innerHTML = `
+      <p style="font-size:15px;color:var(--fg-standard);margin-bottom:24px;line-height:22px">What type of integration would you like to set up?</p>
       ${SETUP_CATEGORIES.map(cat => `
         <div class="type-category">
           <div class="type-category-label">${cat.label}</div>
           <div class="type-selector ${cat.types.length === 1 ? 'single' : ''}">
-            ${cat.types.map(tid => { const t = INTEGRATION_TYPES.find(x => x.id === tid); return t ? `<div class="type-option ${selectedType === t.id ? 'selected' : ''}" data-type="${t.id}" onclick="selectType('${t.id}')"><div class="type-option-icon">${getTypeIcon(t.id)}</div>${t.label}</div>` : ''; }).join('')}
+            ${cat.types.map(tid => { const t = INTEGRATION_TYPES.find(x => x.id === tid); return t ? `<div class="type-option" data-type="${t.id}" onclick="selectWizType('${t.id}')" ${t.desc ? 'style="text-align:left;flex-direction:row;gap:12px;padding:16px"' : ''}><div class="type-option-icon">${getTypeIcon(t.id)}</div><div>${t.label}${t.desc ? `<div style="font-size:13px;font-weight:400;color:var(--fg-standard);margin-top:4px;line-height:18px">${t.desc}</div>` : ''}</div></div>` : ''; }).join('')}
           </div>
         </div>
       `).join('')}
-    </div>` : ''}
-    <div class="form-section"><div class="form-section-title">General</div>
-      <div class="form-group"><label class="form-label">Integration name <span class="required">*</span></label><input type="text" class="form-input" id="field-name" placeholder="e.g., Google Analytics - Production" value="${item ? item.name : ''}"><div class="form-error" id="error-name">Integration name is required</div></div>
-      <div class="form-group"><label class="form-label">Time zone <span class="required">*</span></label><select class="form-select" id="field-timezone"><option value="">Select time zone...</option>${TIMEZONES.map(tz => `<option value="${tz}" ${item?.settings?.timezone === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select><div class="form-error" id="error-timezone">Time zone is required</div><div class="form-hint">Must match your external system for accurate data sync</div></div>
-    </div>
-    <div class="form-section"><div class="form-section-title">Authentication</div>
-      <div class="form-group" id="group-apiToken"><label class="form-label">API Token</label><input type="text" class="form-input" id="field-apiToken" placeholder="Enter API token" value="${item?.settings?.credentials?.apiToken || ''}"></div>
-      <div class="form-group conditional-fields ${item?.type === 'Adobe' ? 'visible' : ''}" id="group-clientId"><label class="form-label">Client ID</label><input type="text" class="form-input" id="field-clientId" placeholder="Enter client ID" value="${item?.settings?.credentials?.clientId || ''}"></div>
-      <div class="form-group conditional-fields ${item?.type === 'Adobe' ? 'visible' : ''}" id="group-clientSecret"><label class="form-label">Client Secret</label><input type="password" class="form-input" id="field-clientSecret" placeholder="Enter client secret" value="${item?.settings?.credentials?.clientSecret || ''}"></div>
-    </div>
-    <div class="form-section"><div class="form-section-title">Data Configuration</div>
-      <div class="form-group conditional-fields ${item?.type === 'GA' || item?.type === 'SA360' ? 'visible' : ''}" id="group-propertyId"><label class="form-label">Property / View ID</label><input type="text" class="form-input" id="field-propertyId" placeholder="e.g., UA-12345678-1" value="${item?.settings?.externalIds?.propertyId || ''}"></div>
-      <div class="form-group conditional-fields ${item?.type === 'MMP' ? 'visible' : ''}" id="group-appId"><label class="form-label">Mobile App ID</label><input type="text" class="form-input" id="field-appId" placeholder="e.g., com.example.app" value="${item?.settings?.externalIds?.appId || ''}"></div>
-      <div class="form-group conditional-fields ${item?.type === 'Adobe' ? 'visible' : ''}" id="group-reportSuiteId"><label class="form-label">Report Suite ID</label><input type="text" class="form-input" id="field-reportSuiteId" placeholder="e.g., smartly-prod-01" value="${item?.settings?.externalIds?.reportSuiteId || ''}"></div>
-      <div class="form-group"><label class="form-label">Events</label><div class="form-tags" id="events-container" onclick="document.getElementById('event-input').focus()">${(item?.settings?.events || []).map(e => `<span class="form-tag" data-event="${e}">${e}<button onclick="removeEvent(this)">&times;</button></span>`).join('')}<input type="text" id="event-input" placeholder="Type event name and press Enter" onkeydown="handleEventKey(event)"></div><div class="form-hint">Press Enter to add each event name</div></div>
-    </div>
-    <div class="form-section conditional-fields ${item?.type === 'GA' || item?.type === 'SA360' ? 'visible' : ''}" id="section-utm"><div class="form-section-title">Tracking Settings</div><div class="form-group"><label class="form-label">UTM Parameter</label><select class="form-select" id="field-utmParam"><option value="">Select UTM parameter...</option><option value="utm_id" ${item?.settings?.utmConfig?.parameter === 'utm_id' ? 'selected' : ''}>utm_id (recommended)</option><option value="utm_campaign" ${item?.settings?.utmConfig?.parameter === 'utm_campaign' ? 'selected' : ''}>utm_campaign</option><option value="utm_source" ${item?.settings?.utmConfig?.parameter === 'utm_source' ? 'selected' : ''}>utm_source</option><option value="utm_medium" ${item?.settings?.utmConfig?.parameter === 'utm_medium' ? 'selected' : ''}>utm_medium</option></select></div></div>
-    <div class="form-section"><div class="form-section-title">Account Mapping</div><div class="form-group"><label class="form-label">Link ad accounts</label><div class="account-chips">${ACCOUNTS.map(acc => `<div class="account-chip ${item?.accounts?.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><span class="mi" style="font-size:12px;color:white">check</span></span>${acc}</div>`).join('')}</div></div></div>
-  `;
-  footer.innerHTML = `<button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="saveGenericIntegration()">${isEdit ? 'Update integration' : 'Connect'}</button>`;
-  if (isEdit) updateFieldVisibility(item.type);
+    `;
+    footer.innerHTML = `<button class="btn-secondary" onclick="closeModal()">Cancel</button>`;
+    return;
+  }
+
+  modal.classList.add('wide');
+  const titles = { 1: isEdit ? 'Edit integration' : getTypeLabel(wizType), 2: 'Authentication', 3: 'Data Configuration', 4: 'Review & Connect' };
+  title.textContent = titles[s];
+
+  if (s === 1) {
+    body.innerHTML = wizStepperHtml(s) + `
+      <div class="form-section"><div class="form-section-title">General</div>
+        <div class="form-group"><label class="form-label">Integration name <span class="required">*</span></label><input type="text" class="form-input" id="wiz-name" placeholder="e.g., ${getTypeLabel(wizType)} - Production" value="${wizState.name}"><div class="form-error" id="wiz-err-name">Integration name is required</div></div>
+        <div class="form-group"><label class="form-label">Time zone <span class="required">*</span></label><select class="form-select" id="wiz-timezone"><option value="">Select time zone...</option>${TIMEZONES.map(tz => `<option value="${tz}" ${wizState.timezone === tz ? 'selected' : ''}>${tz}</option>`).join('')}</select><div class="form-error" id="wiz-err-tz">Time zone is required</div><div class="form-hint">Must match your external system for accurate data sync</div></div>
+      </div>
+    `;
+    footer.innerHTML = `<button class="btn-secondary" onclick="wizBack()">Back</button><button class="btn-primary" onclick="wizNext()">Next: Authenticate</button>`;
+  }
+
+  else if (s === 2) {
+    body.innerHTML = wizStepperHtml(s) + `
+      <div class="callout info"><span class="mi" style="font-size:20px">info</span><p>Enter the credentials for your <strong>${getTypeLabel(wizType)}</strong> integration. ${isAdobe ? 'Adobe Analytics requires both an API token and OAuth client credentials.' : 'You can find your API token in the external platform\u2019s developer settings.'}</p></div>
+      <div class="form-section"><div class="form-section-title">Credentials</div>
+        <div class="form-group"><label class="form-label">API Token</label><input type="text" class="form-input" id="wiz-apiToken" placeholder="Enter API token" value="${wizState.apiToken}"></div>
+        ${isAdobe ? `
+        <div class="form-group"><label class="form-label">Client ID</label><input type="text" class="form-input" id="wiz-clientId" placeholder="Enter client ID" value="${wizState.clientId}"></div>
+        <div class="form-group"><label class="form-label">Client Secret</label><input type="password" class="form-input" id="wiz-clientSecret" placeholder="Enter client secret" value="${wizState.clientSecret}"></div>
+        ` : ''}
+      </div>
+    `;
+    footer.innerHTML = `<button class="btn-secondary" onclick="wizBack()">Back</button><button class="btn-primary" onclick="wizNext()">Next: Configure</button>`;
+  }
+
+  else if (s === 3) {
+    body.innerHTML = wizStepperHtml(s) + `
+      ${isGA ? `<div class="form-section"><div class="form-section-title">Tracking Settings</div>
+        <div class="form-group"><label class="form-label">Property / View ID</label><input type="text" class="form-input" id="wiz-propertyId" placeholder="e.g., UA-12345678-1" value="${wizState.propertyId}"></div>
+        <div class="form-group"><label class="form-label">UTM Parameter</label><select class="form-select" id="wiz-utmParam"><option value="">Select UTM parameter...</option><option value="utm_id" ${wizState.utmParam === 'utm_id' ? 'selected' : ''}>utm_id (recommended)</option><option value="utm_campaign" ${wizState.utmParam === 'utm_campaign' ? 'selected' : ''}>utm_campaign</option><option value="utm_source" ${wizState.utmParam === 'utm_source' ? 'selected' : ''}>utm_source</option><option value="utm_medium" ${wizState.utmParam === 'utm_medium' ? 'selected' : ''}>utm_medium</option></select></div>
+      </div>` : ''}
+      ${isMMP ? `<div class="form-section"><div class="form-section-title">App Settings</div>
+        <div class="form-group"><label class="form-label">Mobile App ID</label><input type="text" class="form-input" id="wiz-appId" placeholder="e.g., com.example.app" value="${wizState.appId}"></div>
+      </div>` : ''}
+      ${isAdobe ? `<div class="form-section"><div class="form-section-title">Report Settings</div>
+        <div class="form-group"><label class="form-label">Report Suite ID</label><input type="text" class="form-input" id="wiz-reportSuiteId" placeholder="e.g., smartly-prod-01" value="${wizState.reportSuiteId}"></div>
+      </div>` : ''}
+      <div class="form-section"><div class="form-section-title">Events</div>
+        <div class="form-group"><label class="form-label">Conversion events</label><div class="form-tags" id="wiz-events" onclick="document.getElementById('wiz-event-input').focus()">${wizState.events.map(e => `<span class="form-tag" data-event="${e}">${e}<button onclick="removeEvent(this)">&times;</button></span>`).join('')}<input type="text" id="wiz-event-input" placeholder="Type event name and press Enter" onkeydown="handleEventKey(event)"></div><div class="form-hint">Press Enter to add each event name</div></div>
+      </div>
+      <div class="form-section"><div class="form-section-title">Account Mapping</div>
+        <div class="form-group"><label class="form-label">Link ad accounts</label><div class="account-chips" id="wiz-accounts">${ACCOUNTS.map(acc => `<div class="account-chip ${wizState.accounts.includes(acc) ? 'selected' : ''}" onclick="toggleAccount(this)" data-account="${acc}"><span class="check"><span class="mi" style="font-size:12px;color:white">check</span></span>${acc}</div>`).join('')}</div></div>
+      </div>
+    `;
+    footer.innerHTML = `<button class="btn-secondary" onclick="wizBack()">Back</button><button class="btn-primary" onclick="wizNext()">Next: Review</button>`;
+  }
+
+  else if (s === 4) {
+    const channels = TYPE_CHANNELS[wizType] || [];
+    const channelHtml = channels.map(id => { const ch = CHANNELS[id]; return ch ? `<span class="channel-logo" style="background:${ch.bg};width:24px;height:24px">${ch.logo}</span>` : ''; }).join('');
+    const acctHtml = wizState.accounts.length ? wizState.accounts.map(a => `<span class="detail-tag">${a.replace(/^Ad Account\s*[-\u2013\u2014]\s*/i, '')}</span>`).join(' ') : '<span style="color:var(--fg-disabled)">None selected</span>';
+    const eventsHtml = wizState.events.length ? wizState.events.map(e => `<span class="detail-tag">${e}</span>`).join(' ') : '<span style="color:var(--fg-disabled)">None</span>';
+
+    body.innerHTML = wizStepperHtml(s) + `
+      <div class="callout success"><span class="mi" style="font-size:20px">check_circle</span><p>Everything looks good! Review your configuration below and click <strong>${isEdit ? 'Update' : 'Save & Connect'}</strong> to finalize.</p></div>
+      <div class="detail-section" style="margin-bottom:16px"><div class="detail-section-title">General</div>
+        <div class="detail-row"><span class="detail-key">Name</span><span class="detail-value">${wizState.name}</span></div>
+        <div class="detail-row"><span class="detail-key">Type</span><span class="detail-value" style="display:flex;align-items:center;gap:8px;justify-content:flex-end">${getTypeIcon(wizType)} ${getTypeLabel(wizType)}</span></div>
+        <div class="detail-row"><span class="detail-key">Time zone</span><span class="detail-value">${wizState.timezone}</span></div>
+        <div class="detail-row"><span class="detail-key">Channels</span><span class="detail-value"><span class="detail-tags" style="gap:4px">${channelHtml}</span></span></div>
+      </div>
+      <div class="detail-section" style="margin-bottom:16px"><div class="detail-section-title">Authentication</div>
+        <div class="detail-row"><span class="detail-key">API Token</span><span class="detail-value">${wizState.apiToken ? '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022' + wizState.apiToken.slice(-4) : '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>
+        ${isAdobe ? `<div class="detail-row"><span class="detail-key">Client ID</span><span class="detail-value">${wizState.clientId || '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>
+        <div class="detail-row"><span class="detail-key">Client Secret</span><span class="detail-value">${wizState.clientSecret ? '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022' : '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>` : ''}
+      </div>
+      <div class="detail-section"><div class="detail-section-title">Configuration</div>
+        ${isGA ? `<div class="detail-row"><span class="detail-key">Property / View ID</span><span class="detail-value">${wizState.propertyId || '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>
+        <div class="detail-row"><span class="detail-key">UTM Parameter</span><span class="detail-value">${wizState.utmParam || '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>` : ''}
+        ${isMMP ? `<div class="detail-row"><span class="detail-key">Mobile App ID</span><span class="detail-value">${wizState.appId || '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>` : ''}
+        ${isAdobe ? `<div class="detail-row"><span class="detail-key">Report Suite ID</span><span class="detail-value">${wizState.reportSuiteId || '<span style="color:var(--fg-disabled)">Not set</span>'}</span></div>` : ''}
+        <div class="detail-row"><span class="detail-key">Events</span><span class="detail-value"><span class="detail-tags">${eventsHtml}</span></span></div>
+        <div class="detail-row"><span class="detail-key">Ad accounts</span><span class="detail-value"><span class="detail-tags">${acctHtml}</span></span></div>
+      </div>
+    `;
+    footer.innerHTML = `<button class="btn-secondary" onclick="wizBack()">Back</button><button class="btn-primary" onclick="saveWizIntegration()">${isEdit ? 'Update integration' : 'Save & Connect'}</button>`;
+  }
 }
 
-function selectType(t) {
-  document.querySelectorAll('.type-option').forEach(e => e.classList.remove('selected'));
-  document.querySelector(`.type-option[data-type="${t}"]`).classList.add('selected');
+function selectWizType(t) {
   if (t === 'RSC') { closeModal(); openRscWizard(null); return; }
-  updateFieldVisibility(resolveType(t));
+  wizType = t;
+  wizStep = 1;
+  renderWizStep();
 }
-function updateFieldVisibility(t) {
-  const ga = t === 'GA' || t === 'SA360', ad = t === 'Adobe', mm = t === 'MMP';
-  document.getElementById('group-propertyId')?.classList.toggle('visible', ga);
-  document.getElementById('group-appId')?.classList.toggle('visible', mm);
-  document.getElementById('group-reportSuiteId')?.classList.toggle('visible', ad);
-  document.getElementById('group-clientId')?.classList.toggle('visible', ad);
-  document.getElementById('group-clientSecret')?.classList.toggle('visible', ad);
-  document.getElementById('section-utm')?.classList.toggle('visible', ga);
-}
+
 function handleEventKey(e) {
   if (e.key !== 'Enter') return; e.preventDefault();
   const v = e.target.value.trim(); if (!v) return;
@@ -1485,36 +1591,57 @@ function handleEventKey(e) {
 function removeEvent(btn) { btn.parentElement.remove(); }
 function toggleAccount(el) { el.classList.toggle('selected'); }
 
-function saveGenericIntegration() {
-  const name = document.getElementById('field-name').value.trim();
-  const tz = document.getElementById('field-timezone').value;
-  let ok = true;
-  if (!name) { document.getElementById('field-name').classList.add('error'); document.getElementById('error-name').classList.add('visible'); ok = false; } else { document.getElementById('field-name').classList.remove('error'); document.getElementById('error-name').classList.remove('visible'); }
-  if (!tz) { document.getElementById('field-timezone').classList.add('error'); document.getElementById('error-timezone').classList.add('visible'); ok = false; } else { document.getElementById('field-timezone').classList.remove('error'); document.getElementById('error-timezone').classList.remove('visible'); }
-  if (!editingId && !document.querySelector('.type-option.selected')) { showToast('Please select an integration type', 'error'); ok = false; }
-  if (!ok) return;
+function collectWizStepState() {
+  if (wizStep === 1) {
+    wizState.name = document.getElementById('wiz-name')?.value.trim() || '';
+    wizState.timezone = document.getElementById('wiz-timezone')?.value || '';
+  } else if (wizStep === 2) {
+    wizState.apiToken = document.getElementById('wiz-apiToken')?.value.trim() || '';
+    wizState.clientId = document.getElementById('wiz-clientId')?.value.trim() || '';
+    wizState.clientSecret = document.getElementById('wiz-clientSecret')?.value.trim() || '';
+  } else if (wizStep === 3) {
+    wizState.propertyId = document.getElementById('wiz-propertyId')?.value.trim() || '';
+    wizState.appId = document.getElementById('wiz-appId')?.value.trim() || '';
+    wizState.reportSuiteId = document.getElementById('wiz-reportSuiteId')?.value.trim() || '';
+    wizState.utmParam = document.getElementById('wiz-utmParam')?.value || '';
+    wizState.events = Array.from(document.querySelectorAll('#wiz-events .form-tag')).map(t => t.dataset.event);
+    wizState.accounts = Array.from(document.querySelectorAll('#wiz-accounts .account-chip.selected')).map(e => e.dataset.account);
+  }
+}
 
-  const apiToken = document.getElementById('field-apiToken')?.value.trim() || '';
-  const clientId = document.getElementById('field-clientId')?.value.trim() || '';
-  const clientSecret = document.getElementById('field-clientSecret')?.value.trim() || '';
-  const propertyId = document.getElementById('field-propertyId')?.value.trim() || '';
-  const appId = document.getElementById('field-appId')?.value.trim() || '';
-  const reportSuiteId = document.getElementById('field-reportSuiteId')?.value.trim() || '';
-  const utmParam = document.getElementById('field-utmParam')?.value || '';
-  const events = Array.from(document.querySelectorAll('#events-container .form-tag')).map(t => t.dataset.event);
-  const accts = Array.from(document.querySelectorAll('.account-chip.selected')).map(e => e.dataset.account);
+function wizNext() {
+  collectWizStepState();
+  if (wizStep === 1) {
+    let ok = true;
+    if (!wizState.name) { document.getElementById('wiz-name').classList.add('error'); document.getElementById('wiz-err-name').classList.add('visible'); ok = false; }
+    if (!wizState.timezone) { document.getElementById('wiz-timezone').classList.add('error'); document.getElementById('wiz-err-tz').classList.add('visible'); ok = false; }
+    if (!ok) return;
+  }
+  wizStep++;
+  renderWizStep();
+}
+
+function wizBack() {
+  collectWizStepState();
+  if (wizStep === 1 && editingId) { closeModal(); return; }
+  wizStep--;
+  renderWizStep();
+}
+
+function saveWizIntegration() {
+  const { name, timezone: tz, apiToken, clientId, clientSecret, propertyId, appId, reportSuiteId, utmParam, events, accounts: accts } = wizState;
   const status = apiToken || clientId ? 'active' : 'inactive';
+  const now = new Date().toISOString();
+  const settings = { timezone: tz, credentials: { apiToken, clientId, clientSecret }, externalIds: { propertyId, appId, reportSuiteId }, events, utmConfig: utmParam ? { parameter: utmParam } : {} };
 
   if (editingId) {
     const item = integrations.find(i => i.id === editingId);
-    Object.assign(item, { name, status, accounts: accts, updatedAt: new Date().toISOString() });
-    item.settings = { timezone: tz, credentials: { apiToken, clientId, clientSecret }, externalIds: { propertyId, appId, reportSuiteId }, events, utmConfig: utmParam ? { parameter: utmParam } : {} };
+    Object.assign(item, { name, status, accounts: accts, updatedAt: now, settings });
     showToast(`"${name}" updated`, 'success');
   } else {
-    const rawType = document.querySelector('.type-option.selected').dataset.type;
-    const t = resolveType(rawType);
-    const cat = INTEGRATION_TYPES.find(x => x.id === rawType).category;
-    integrations.push({ id: String(nextId++), name, type: t, status, category: cat, settings: { timezone: tz, credentials: { apiToken, clientId, clientSecret }, externalIds: { propertyId, appId, reportSuiteId }, events, utmConfig: utmParam ? { parameter: utmParam } : {} }, accounts: accts, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const t = resolveType(wizType);
+    const cat = INTEGRATION_TYPES.find(x => x.id === wizType).category;
+    integrations.push({ id: String(nextId++), name, type: t, status, category: cat, settings, accounts: accts, createdAt: now, updatedAt: now });
     showToast(`"${name}" created`, 'success');
   }
   closeModal(); renderList();
